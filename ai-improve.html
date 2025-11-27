@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Content Improver</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .tab-container {
+            display: flex;
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+        }
+        .tab.active {
+            color: #4CAF50;
+            border-bottom: 2px solid #4CAF50;
+            margin-bottom: -2px;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .field-item {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #f9f9f9;
+        }
+        .field-label {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .field-info {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+            padding: 5px 10px;
+            background: #f0f0f0;
+            border-radius: 3px;
+        }
+        .field-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+        .char-count {
+            font-weight: 500;
+        }
+        .field-original {
+            background: #fff;
+            padding: 10px;
+            border-left: 3px solid #ff9800;
+            margin-bottom: 10px;
+            border-radius: 3px;
+            font-size: 13px;
+            word-wrap: break-word;
+        }
+        .field-improved {
+            background: #e8f5e9;
+            padding: 10px;
+            border-left: 3px solid #4CAF50;
+            margin-bottom: 10px;
+            border-radius: 3px;
+            font-size: 13px;
+            word-wrap: break-word;
+        }
+        .field-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .field-actions button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .field-actions button:hover:not(:disabled) {
+            transform: scale(1.02);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .field-actions button:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+        .accept-btn {
+            background: #4CAF50;
+            color: white;
+        }
+        .reject-btn {
+            background: #f44336;
+            color: white;
+        }
+        .apply-single-btn {
+            background: #1976D2;
+            color: white;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+        /* Saved Presets row responsiveness and overflow handling */
+        .preset-row { display:flex; gap:8px; align-items:center; }
+        #presetSelect { flex:1 1 auto; min-width:0; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .preset-row button { flex:0 0 auto; }
+        @media (max-width: 600px) {
+            .preset-row { flex-direction: column; align-items: stretch; }
+            .preset-row button { width:100%; }
+            #presetSelect { width:100%; }
+        }
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4CAF50;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .settings-form {
+            margin-bottom: 15px;
+        }
+        .small-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="popupNotice" style="display:none; position: sticky; top:0; z-index: 1000; background:#fff3cd; color:#856404; border-bottom:1px solid #ffeeba; padding:8px 12px; font-size:13px;">
+        Some advanced controls may be clipped in popup. <a id="openFullTabLink" href="#" style="font-weight:600; color:#0d6efd; text-decoration: underline;">Open full version in new tab</a>
+    </div>
+    <div class="container">
+        <h1>AI Content Improver</h1>
+        
+        <div class="tab-container">
+            <button class="tab active" data-tab="settings">Settings</button>
+            <button class="tab" data-tab="improve">Improve Content</button>
+            <button class="tab" data-tab="replace">Bulk Replace</button>
+            <button class="tab" data-tab="images">Service Images</button>
+            <button class="tab" data-tab="fields">Custom Fields</button>
+            <button class="tab" data-tab="text">Service Text</button>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settings-tab" class="tab-content active">
+            <div class="input-group">
+                <label for="apiKey">Gemini API Key:</label>
+                <input type="password" id="apiKey" placeholder="Enter your Gemini API key">
+                <p class="small-text">Get your free API key from <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a></p>
+                <button id="testApiBtn" class="btn btn-secondary" style="width: 100%; margin-top: 10px;">Test API Key</button>
+            </div>
+
+            <div class="input-group">
+                <label for="brandName">Brand Name:</label>
+                <input type="text" id="brandName" placeholder="e.g., Acme Appliances">
+            </div>
+
+            <div class="input-group">
+                <label for="businessFocus">Business Focus:</label>
+                <input type="text" id="businessFocus" placeholder="e.g., Commercial refrigerator repairs">
+            </div>
+
+            <div class="input-group">
+                <label for="targetAudience">Target Audience:</label>
+                <input type="text" id="targetAudience" placeholder="e.g., Restaurants, Hotels, Cafes">
+            </div>
+
+            <div class="input-group">
+                <label for="serviceArea">Service Area:</label>
+                <input type="text" id="serviceArea" placeholder="e.g., Melbourne, Australia">
+            </div>
+
+            <div class="input-group">
+                <label for="tone">Content Tone:</label>
+                <select id="tone">
+                    <option value="professional">Professional</option>
+                    <option value="friendly">Friendly</option>
+                    <option value="casual">Casual</option>
+                    <option value="formal">Formal</option>
+                    <option value="persuasive">Persuasive</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="additionalInstructions">Additional Instructions (optional):</label>
+                <textarea id="additionalInstructions" rows="4" placeholder="e.g., Always mention 24/7 availability, emphasize fast response times, include warranty information, etc." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; resize: vertical;"></textarea>
+                <p class="small-text">Add any custom instructions or context you want the AI to consider when improving content.</p>
+            </div>
+
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
+
+            <h3 style="color: #1976D2; margin-bottom: 15px;">WordPress Integration (for Image Upload)</h3>
+            
+            <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; padding: 12px; margin-bottom: 15px;">
+                <strong style="color: #856404;">⚠️ Local WordPress Users:</strong>
+                <p style="margin: 8px 0 0 0; font-size: 13px; color: #856404;">
+                    If using a local WordPress (.local, localhost, 127.0.0.1), the API authentication may not work. 
+                    The extension will offer a <strong>Manual Assignment Helper</strong> instead - a visual guide panel in your WordPress admin.
+                </p>
+            </div>
+            
+            <div class="input-group">
+                <label for="wpSiteUrl">WordPress Site URL:</label>
+                <input type="url" id="wpSiteUrl" placeholder="https://yoursite.com or https://yoursite.local">
+                <p class="small-text">Your WordPress site URL (without /wp-admin)</p>
+            </div>
+
+            <div class="input-group">
+                <label for="wpUsername">WordPress Username:</label>
+                <input type="text" id="wpUsername" placeholder="your-username">
+            </div>
+
+            <div class="input-group">
+                <label for="wpAppPassword">WordPress Application Password:</label>
+                <input type="password" id="wpAppPassword" placeholder="xxxx xxxx xxxx xxxx xxxx xxxx">
+                <p class="small-text">Create one at: WordPress Admin → Users → Your Profile → Application Passwords</p>
+                <button id="testWpConnectionBtn" class="btn btn-secondary" style="width: 100%; margin-top: 10px;">Test WordPress Connection</button>
+            </div>
+
+            <div class="input-group" style="margin-top: 20px; padding: 15px; background: #e8f5e9; border-radius: 4px; border: 1px solid #4CAF50;">
+                <label style="display: flex; align-items: center; cursor: pointer;">
+                    <input type="checkbox" id="autoCreateAcfFields" style="margin-right: 10px; width: 18px; height: 18px; cursor: pointer;">
+                    <span style="font-weight: 600; color: #2e7d32;">✨ Auto-create ACF fields if missing</span>
+                </label>
+                <p class="small-text" style="margin-top: 8px; color: #2e7d32;">
+                    If enabled, the extension will automatically create service ACF fields (service_1_image, service_1_title, etc.) 
+                    on the page if they don't exist. This allows you to use the extension on ANY page without manual ACF setup!
+                </p>
+            </div>
+
+            <button id="saveSettings" class="btn btn-primary" style="width: 100%;">Save Settings</button>
+            <div id="settingsStatus" class="status"></div>
+        </div>
+
+        <!-- Improve Content Tab -->
+        <div id="improve-tab" class="tab-content">
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label for="targetPageUrl">🔗 Target Page URL (optional):</label>
+                <input type="url" id="targetPageUrl" placeholder="https://yoursite.com/page-to-edit" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                <p class="small-text">Paste the URL of the page you want to scan/edit. Leave empty to use current active tab.</p>
+            </div>
+
+            <button id="scanBtn" class="btn btn-primary" style="width: 100%; margin-bottom: 15px;">
+                Scan Page & Generate Suggestions
+            </button>
+
+            <div class="input-group" style="margin-bottom: 10px;">
+                <label>💾 Saved Presets:</label>
+                <div class="preset-row">
+                    <select id="presetSelect" style="flex:1; padding:8px; border:1px solid #ddd; border-radius:4px; max-width:100%;">
+                        <option value="">-- No presets saved yet --</option>
+                    </select>
+                    <button id="loadPresetBtn" class="btn btn-secondary" style="white-space:nowrap;">Load</button>
+                    <button id="deletePresetBtn" class="btn btn-secondary" style="background:#f44336; color:#fff; white-space:nowrap;">Delete</button>
+                </div>
+                <button id="savePresetBtn" class="btn btn-secondary" style="width:100%; margin-top:8px;">Save Current Suggestions as Preset</button>
+                <p class="small-text">Presets store your suggestions plus settings (brand, focus, audience, area, tone). Load one and use Apply All without rescanning.</p>
+            </div>
+
+            <button id="testConnectionBtn" class="btn btn-secondary" style="width: 100%; margin-bottom: 15px; background: #9C27B0; color: white;">
+                🔧 Test Connection (Debug)
+            </button>
+
+            <div id="loadingContainer" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Analyzing content with AI...</p>
+            </div>
+
+            <div id="suggestionsContainer"></div>
+            
+            <div id="improveStatus" class="status"></div>
+
+            <button id="applyAllBtn" class="btn btn-secondary" style="width: 100%; margin-top: 15px; display: none;">
+                Apply All Accepted Changes
+            </button>
+        </div>
+
+        <!-- Bulk Replace Services Tab -->
+        <div id="replace-tab" class="tab-content">
+            <h2>Bulk Replace Services</h2>
+            <p class="small-text">Load your service data file or paste it below</p>
+            
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label for="serviceFile">Load from File:</label>
+                <input type="file" id="serviceFile" accept=".txt,.md" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+
+            <div class="input-group">
+                <label for="serviceData">Or Paste Service Data:</label>
+                <textarea id="serviceData" rows="15" placeholder="Paste your service data here...
+Example:
+Service 1 title - Fridge Repairs
+Service 1 text - Fast commercial fridge repairs
+Service 1 url - /services/fridge/"></textarea>
+            </div>
+
+            <button id="saveDataBtn" class="btn btn-secondary" style="width: 48%; margin-bottom: 10px; display: inline-block;">
+                💾 Save to Extension
+            </button>
+
+            <button id="downloadDataBtn" class="btn btn-secondary" style="width: 48%; margin-bottom: 10px; display: inline-block; margin-left: 4%;">
+                📥 Download File
+            </button>
+
+            <button id="parseDataBtn" class="btn btn-primary" style="width: 100%; margin-bottom: 15px; background: #FF5722; color: white; border: none; border-radius: 4px; font-weight: 600; cursor: pointer; padding: 12px; font-size: 16px;">
+                📋 Parse & Preview Services
+            </button>
+
+            <div id="parseStatus" class="status"></div>
+
+            <div id="nextStepsGuide" style="display: none; margin-top: 20px; padding: 20px; background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-radius: 8px; border: 2px solid #4CAF50;">
+                <h3 style="color: #1b5e20; margin: 0 0 15px 0; text-align: center;">🎯 Next Steps</h3>
+                <p style="color: #2e7d32; margin-bottom: 15px; text-align: center;">Data parsed successfully! Choose your action:</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <button id="navToImagesBtn" class="btn" style="background: #9C27B0; color: white; padding: 15px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; text-align: center;">
+                        📷<br>Service<br>Images
+                    </button>
+                    <button id="navToFieldsBtn" class="btn" style="background: #2196F3; color: white; padding: 15px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; text-align: center;">
+                        🎯<br>Custom<br>Fields
+                    </button>
+                    <button id="navToTextBtn" class="btn" style="background: #4CAF50; color: white; padding: 15px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; text-align: center;">
+                        📝<br>Service<br>Text
+                    </button>
+                </div>
+                
+                <p style="color: #388e3c; font-size: 13px; text-align: center; margin: 0;">
+                    💡 Each tab has its own page settings and specialized tools
+                </p>
+            </div>
+
+            <div id="previewContainer" style="display: none; margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 4px; border: 1px solid #ddd;">
+                <h3 style="margin: 0 0 15px 0; color: #333;">📋 Preview:</h3>
+                <div id="previewContent"></div>
+            </div>
+
+            <div id="replaceStatus" class="status"></div>
+        </div>
+
+        <!-- Service Images Tab -->
+        <div id="images-tab" class="tab-content">
+            <h2 style="color: #9C27B0; margin-bottom: 20px; display: flex; align-items: center;">
+                <span style="font-size: 24px; margin-right: 10px;">📷</span>
+                Service Images Management
+            </h2>
+            
+            <div style="background: #f3e5f5; border: 2px solid #9C27B0; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                <h3 style="color: #4a148c; margin: 0 0 15px 0;">📍 Page Settings</h3>
+                <div class="input-group">
+                    <label for="imagesPageUrl" style="color: #6a1b9a; font-weight: 600;">Target Page URL:</label>
+                    <input type="text" id="imagesPageUrl" placeholder="https://citywide.local/wp-admin/post.php?post=4185&action=edit" style="width: 100%; padding: 12px; border: 2px solid #9C27B0; border-radius: 4px; font-size: 14px;">
+                    <small style="color: #6a1b9a; display: block; margin-top: 8px;">WordPress admin URL or front-end page URL</small>
+                </div>
+            </div>
+
+            <div style="background: #f3e5f5; border: 2px solid #9C27B0; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                <h3 style="color: #4a148c; margin: 0 0 15px 0;">📷 Bulk Image Assignment</h3>
+                <p style="color: #4a148c; margin-bottom: 15px; font-size: 14px;">
+                    Upload multiple images to service_1_image, service_2_image, etc. fields automatically.
+                </p>
+                
+                <div class="input-group">
+                    <label for="bulkImageUrlsPage" style="color: #6a1b9a; font-weight: 600;">Image URLs (one per line):</label>
+                    <textarea id="bulkImageUrlsPage" rows="10" placeholder="https://citywide.local/wp-content/uploads/2025/11/image1.jpg
+https://citywide.local/wp-content/uploads/2025/11/image2.jpg
+https://citywide.local/wp-content/uploads/2025/11/image3.jpg
+..." style="width: 100%; padding: 12px; border: 2px solid #9C27B0; border-radius: 4px; font-family: monospace; font-size: 13px;"></textarea>
+                    <small style="color: #6a1b9a; display: block; margin-top: 8px;">📋 Paste up to 11 image URLs. Extension assigns them to service fields automatically.</small>
+                </div>
+                
+                <button id="applyBulkImageUrlsPage" class="btn btn-secondary" style="width: 100%; margin: 15px 0; background: #7B1FA2; color: white; border: none; padding: 12px; font-weight: 600; border-radius: 4px; cursor: pointer;">
+                    🔗 Apply Image URLs to Services
+                </button>
+                
+                <button id="uploadAndAssignImagesPage" class="btn btn-primary" style="width: 100%; background: #9C27B0; color: white; padding: 15px; font-size: 16px; border: none; border-radius: 4px; font-weight: 600; cursor: pointer;">
+                    📸 Upload & Assign All Images
+                </button>
+                
+                <div id="imageMappingListPage" style="max-height: 300px; overflow-y: auto; margin-top: 15px; padding-top: 15px; border-top: 2px solid #9C27B0;"></div>
+                <div id="imagesStatus" class="status" style="margin-top: 15px;"></div>
+            </div>
+        </div>
+
+        <!-- Custom Fields Tab -->
+        <div id="fields-tab" class="tab-content">
+            <h2 style="color: #2196F3; margin-bottom: 20px; display: flex; align-items: center;">
+                <span style="font-size: 24px; margin-right: 10px;">🎯</span>
+                Custom ACF Fields Management
+            </h2>
+            
+            <div style="background: #e3f2fd; border: 2px solid #2196F3; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                <h3 style="color: #0d47a1; margin: 0 0 15px 0;">📍 Page Settings</h3>
+                <div class="input-group">
+                    <label for="fieldsPageUrl" style="color: #1976D2; font-weight: 600;">Target Page URL:</label>
+                    <input type="text" id="fieldsPageUrl" placeholder="https://citywide.local/wp-admin/post.php?post=4185&action=edit" style="width: 100%; padding: 12px; border: 2px solid #2196F3; border-radius: 4px; font-size: 14px;">
+                    <small style="color: #1565c0; display: block; margin-top: 8px;">WordPress admin URL or front-end page URL</small>
+                </div>
+            </div>
+
+            <div style="background: #e3f2fd; border: 2px solid #2196F3; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                <h3 style="color: #0d47a1; margin: 0 0 15px 0;">🎯 Single Custom Field</h3>
+                <p style="color: #0d47a1; margin-bottom: 15px; font-size: 14px;">
+                    Perfect for one-off fields like <code>hero_section_background_image</code>, <code>banner_image</code>, <code>logo_image</code>, etc.
+                </p>
+                
+                <div class="input-group" style="margin-bottom: 15px;">
+                    <label for="customFieldNamePage" style="color: #1976D2; font-weight: 600;">ACF Field Name:</label>
+                    <input type="text" id="customFieldNamePage" placeholder="hero_section_background_image" style="width: 100%; padding: 12px; border: 2px solid #2196F3; border-radius: 4px; font-family: monospace; font-size: 14px;">
+                    <small style="color: #1565c0; display: block; margin-top: 5px;">✨ Use lowercase with underscores only (no spaces or capitals)</small>
+                </div>
+                
+                <div class="input-group" style="margin-bottom: 15px;">
+                    <label for="customFieldImageUrlPage" style="color: #1976D2; font-weight: 600;">WordPress Image URL:</label>
+                    <input type="text" id="customFieldImageUrlPage" placeholder="https://citywide.local/wp-content/uploads/2025/11/image.jpg" style="width: 100%; padding: 12px; border: 2px solid #2196F3; border-radius: 4px; font-size: 14px;">
+                    <small style="color: #1565c0; display: block; margin-top: 5px;">📎 Paste the full image URL from your WordPress media library</small>
+                </div>
+                
+                <button id="applyCustomFieldPage" class="btn btn-primary" style="width: 100%; background: #2196F3; color: white; padding: 15px; font-size: 16px; border: none; border-radius: 4px; font-weight: 600; cursor: pointer;">
+                    ✨ Add/Update Custom Field
+                </button>
+                
+                <div id="customFieldStatusPage" class="status" style="margin-top: 15px;"></div>
+            </div>
+        </div>
+
+        <!-- Service Text Tab -->
+        <div id="text-tab" class="tab-content">
+            <h2 style="color: #4CAF50; margin-bottom: 20px; display: flex; align-items: center;">
+                <span style="font-size: 24px; margin-right: 10px;">📝</span>
+                Service Text Content Management
+            </h2>
+            
+            <div style="background: #e8f5e9; border: 2px solid #4CAF50; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                <h3 style="color: #1b5e20; margin: 0 0 15px 0;">📍 Page Settings</h3>
+                <div class="input-group">
+                    <label for="textPageUrl" style="color: #2e7d32; font-weight: 600;">Target Page URL:</label>
+                    <input type="text" id="textPageUrl" placeholder="https://citywide.local/wp-admin/post.php?post=4185&action=edit" style="width: 100%; padding: 12px; border: 2px solid #4CAF50; border-radius: 4px; font-size: 14px;">
+                    <small style="color: #2e7d32; display: block; margin-top: 8px;">WordPress admin URL or front-end page URL</small>
+                </div>
+            </div>
+
+            <div style="background: #e8f5e9; border: 2px solid #4CAF50; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                <h3 style="color: #1b5e20; margin: 0 0 15px 0;">📝 Service Text Content Update</h3>
+                <p style="color: #1b5e20; margin-bottom: 15px; font-size: 14px;">
+                    Update service titles, descriptions, and URLs from markdown files like <code>replace_domestic.md</code> and <code>replace_commercial.md</code>.
+                </p>
+                
+                <div class="input-group" style="margin-bottom: 15px;">
+                    <label for="serviceTextDataPage" style="color: #2e7d32; font-weight: 600;">Service Text Data:</label>
+                    <textarea id="serviceTextDataPage" rows="8" placeholder="Paste content from replace_domestic.md or replace_commercial.md here..." style="width: 100%; padding: 12px; border: 2px solid #4CAF50; border-radius: 4px; font-family: monospace; font-size: 13px;"></textarea>
+                    <small style="color: #2e7d32; display: block; margin-top: 8px;">📄 Copy/paste from your markdown files with service data</small>
+                </div>
+                
+                <button id="parseServiceTextPage" class="btn btn-secondary" style="width: 48%; margin-right: 4%; background: #388E3C; color: white; padding: 12px; border: none; border-radius: 4px; font-weight: 600; cursor: pointer;">
+                    📋 Parse Service Text
+                </button>
+                
+                <button id="applyServiceTextPage" class="btn btn-primary" style="width: 48%; background: #4CAF50; color: white; padding: 12px; border: none; border-radius: 4px; font-weight: 600; cursor: pointer;">
+                    📝 Update All Service Text
+                </button>
+                
+                <div id="serviceTextStatusPage" class="status" style="margin-top: 15px;"></div>
+                <div id="serviceTextPreview" style="margin-top: 20px; padding: 15px; background: #f1f8e9; border-radius: 4px; border: 1px solid #4CAF50; display: none;">
+                    <h4 style="color: #2e7d32; margin: 0 0 10px 0;">📋 Preview:</h4>
+                    <div id="serviceTextPreviewContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="ai-improve.js"></script>
+</body>
+</html>

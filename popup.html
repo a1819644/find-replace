@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find & Replace</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Find & Replace</h1>
+        
+        <div class="input-group">
+            <label for="findText">Find:</label>
+            <input type="text" id="findText" placeholder="Enter text to find">
+        </div>
+        
+        <div class="input-group">
+            <label for="replaceText">Replace with:</label>
+            <input type="text" id="replaceText" placeholder="Enter replacement text">
+        </div>
+        
+        <div class="options">
+            <label>
+                <input type="checkbox" id="caseSensitive">
+                Case sensitive
+            </label>
+            <label>
+                <input type="checkbox" id="wholeWord">
+                Whole word only
+            </label>
+        </div>
+        
+        <div class="button-group">
+            <button id="replaceBtn" class="btn btn-primary">Replace All</button>
+            <button id="restoreBtn" class="btn btn-secondary">Restore Original</button>
+        </div>
+        
+        <div id="status" class="status"></div>
+
+        <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
+        
+        <button id="openAiInTab" style="display: block; width: 100%; text-align: center; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 4px; font-weight: 500; margin-bottom: 10px; cursor: pointer; font-size: 14px;">
+            🚀 Open AI Improver in New Tab (Stays Open)
+        </button>
+
+        <a href="ai-improve.html" style="display: block; text-align: center; padding: 12px; background: #f0f0f0; color: #333; text-decoration: none; border-radius: 4px; font-weight: 500; font-size: 13px;">
+            ✨ Open in Popup (Quick Access)
+        </a>
+    </div>
+    
+    <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!-- Clean Bulk Replace Section Design -->
+
+<style>
+.bulk-section {
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.section-header {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    user-select: none;
+}
+
+.section-header:hover {
+    opacity: 0.9;
+}
+
+.section-content {
+    transition: max-height 0.3s ease;
+}
+
+.section-content.collapsed {
+    display: none;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.btn {
+    border: none;
+    border-radius: 4px;
+    padding: 12px 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+</style>
+
+<!-- Parse Button (Always Visible) -->
+<button id="parseDataBtn" class="btn btn-primary" style="width: 100%; margin-bottom: 15px; background: #1976D2; color: white; font-size: 16px;">
+    📋 Parse & Preview Services
+</button>
+
+<div id="parseStatus" class="status"></div>
+
+<!-- Organized Sections Container -->
+<div id="bulkSectionsContainer" style="display: none; margin-top: 20px;">
+    
+    <!-- 1. Page Settings Section -->
+    <div class="bulk-section" style="border: 2px solid #FF9800;">
+        <div class="section-header" onclick="toggleBulkSection('pageSettings')" style="background: #FF9800; color: white; padding: 15px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center;">
+                <span style="font-size: 20px; margin-right: 10px;">⚙️</span>
+                <span style="font-weight: 600; font-size: 16px;">Page Settings</span>
+            </div>
+            <span id="pageSettingsToggle" style="font-size: 18px;">▼</span>
+        </div>
+        <div id="pageSettingsContent" class="section-content" style="padding: 20px; background: #fff3e0;">
+            <p style="margin: 0 0 15px 0; color: #e65100; font-size: 14px;">
+                📍 Configure which page to update. Works with any WordPress page that has ACF fields.
+            </p>
+            <div class="input-group">
+                <label for="servicePageBaseUrl" style="color: #bf360c;">Target Page URL:</label>
+                <input type="text" id="servicePageBaseUrl" placeholder="https://citywide.local/wp-admin/post.php?post=4185&action=edit" style="width: 100%; padding: 12px; border: 2px solid #FF9800; border-radius: 4px; font-size: 14px;">
+                <small style="color: #bf360c; display: block; margin-top: 8px;">
+                    💡 <strong>Best:</strong> WordPress admin URL (wp-admin/post.php?post=XXX)<br>
+                    💡 <strong>Alt:</strong> Front-end page URL - extension will find the page automatically
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Custom Single Field Section -->
+    <div class="bulk-section" style="border: 2px solid #2196F3;">
+        <div class="section-header" onclick="toggleBulkSection('customField')" style="background: #2196F3; color: white; padding: 15px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center;">
+                <span style="font-size: 20px; margin-right: 10px;">🎯</span>
+                <span style="font-weight: 600; font-size: 16px;">Custom Single ACF Field</span>
+            </div>
+            <span id="customFieldToggle" style="font-size: 18px;">▼</span>
+        </div>
+        <div id="customFieldContent" class="section-content" style="padding: 20px; background: #e3f2fd;">
+            <p style="margin: 0 0 15px 0; color: #0d47a1; font-size: 14px;">
+                🎯 Perfect for one-off fields like <code>hero_section_background_image</code>, <code>banner_image</code>, <code>logo_image</code>, etc.
+            </p>
+            <div class="input-group">
+                <label for="customFieldName" style="color: #1976D2;">ACF Field Name:</label>
+                <input type="text" id="customFieldName" placeholder="hero_section_background_image" style="width: 100%; padding: 12px; border: 2px solid #2196F3; border-radius: 4px; font-family: monospace; font-size: 14px;">
+                <small style="color: #1565c0; display: block; margin-top: 5px;">✨ Use lowercase with underscores only (no spaces or capitals)</small>
+            </div>
+            <div class="input-group">
+                <label for="customFieldImageUrl" style="color: #1976D2;">WordPress Image URL:</label>
+                <input type="text" id="customFieldImageUrl" placeholder="https://citywide.local/wp-content/uploads/2025/11/image.jpg" style="width: 100%; padding: 12px; border: 2px solid #2196F3; border-radius: 4px; font-size: 14px;">
+                <small style="color: #1565c0; display: block; margin-top: 5px;">📎 Paste the full image URL from your WordPress media library</small>
+            </div>
+            <button id="applyCustomFieldBtn" class="btn" style="width: 100%; background: #2196F3; color: white; padding: 15px; font-size: 16px;">
+                ✨ Add/Update Custom Field
+            </button>
+            <div id="customFieldStatus" class="status" style="margin-top: 15px;"></div>
+        </div>
+    </div>
+
+    <!-- 3. Service Images Bulk Section -->
+    <div class="bulk-section" style="border: 2px solid #9C27B0;">
+        <div class="section-header" onclick="toggleBulkSection('serviceImages')" style="background: #9C27B0; color: white; padding: 15px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center;">
+                <span style="font-size: 20px; margin-right: 10px;">📷</span>
+                <span style="font-weight: 600; font-size: 16px;">Service Images (Bulk Assignment)</span>
+            </div>
+            <span id="serviceImagesToggle" style="font-size: 18px;">▼</span>
+        </div>
+        <div id="serviceImagesContent" class="section-content collapsed" style="padding: 20px; background: #f3e5f5;">
+            <p style="margin: 0 0 15px 0; color: #4a148c; font-size: 14px;">
+                📷 Upload multiple images to <code>service_1_image</code>, <code>service_2_image</code>, etc. fields automatically.
+            </p>
+            <div class="input-group">
+                <label for="bulkImageUrls" style="color: #6a1b9a;">Image URLs (one per line):</label>
+                <textarea id="bulkImageUrls" rows="8" placeholder="https://citywide.local/wp-content/uploads/2025/11/image1.jpg
+https://citywide.local/wp-content/uploads/2025/11/image2.jpg
+https://citywide.local/wp-content/uploads/2025/11/image3.jpg
+..." style="width: 100%; padding: 12px; border: 2px solid #9C27B0; border-radius: 4px; font-family: monospace; font-size: 13px;"></textarea>
+                <small style="color: #6a1b9a; display: block; margin-top: 8px;">📋 Paste up to 11 image URLs. Extension assigns them to service_1_image, service_2_image, etc.</small>
+            </div>
+            <button id="applyBulkImageUrls" class="btn" style="width: 100%; margin-bottom: 15px; background: #7B1FA2; color: white; padding: 12px;">
+                🔗 Apply Image URLs to Services
+            </button>
+            <button id="uploadAndAssignImagesBtn" class="btn" style="width: 100%; background: #9C27B0; color: white; padding: 15px; font-size: 16px;">
+                📸 Upload & Assign All Images
+            </button>
+            <div id="imageMappingList" style="max-height: 300px; overflow-y: auto; margin-top: 15px; padding-top: 15px; border-top: 2px solid #9C27B0;"></div>
+        </div>
+    </div>
+
+    <!-- 4. Service Text Content Section -->
+    <div class="bulk-section" style="border: 2px solid #4CAF50;">
+        <div class="section-header" onclick="toggleBulkSection('serviceText')" style="background: #4CAF50; color: white; padding: 15px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center;">
+                <span style="font-size: 20px; margin-right: 10px;">📝</span>
+                <span style="font-weight: 600; font-size: 16px;">Service Text Content (Bulk Update)</span>
+            </div>
+            <span id="serviceTextToggle" style="font-size: 18px;">▼</span>
+        </div>
+        <div id="serviceTextContent" class="section-content collapsed" style="padding: 20px; background: #e8f5e9;">
+            <p style="margin: 0 0 15px 0; color: #1b5e20; font-size: 14px;">
+                📝 Update service titles, descriptions, and URLs from markdown files like <code>replace_domestic.md</code> and <code>replace_commercial.md</code>.
+            </p>
+            <div class="input-group">
+                <label for="serviceTextData" style="color: #2e7d32;">Service Text Data:</label>
+                <textarea id="serviceTextData" rows="6" placeholder="Paste content from replace_domestic.md or replace_commercial.md here..." style="width: 100%; padding: 12px; border: 2px solid #4CAF50; border-radius: 4px; font-family: monospace; font-size: 13px;"></textarea>
+                <small style="color: #2e7d32; display: block; margin-top: 8px;">📄 Copy/paste from your markdown files with service data</small>
+            </div>
+            <button id="parseServiceTextBtn" class="btn" style="width: 48%; margin-right: 4%; background: #388E3C; color: white; padding: 12px;">
+                📋 Parse Service Text
+            </button>
+            <button id="applyServiceTextBtn" class="btn" style="width: 48%; background: #4CAF50; color: white; padding: 12px;">
+                📝 Update All Service Text
+            </button>
+            <div id="serviceTextStatus" class="status" style="margin-top: 15px;"></div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Quick Actions (Always Visible After Parse) -->
+<div id="mainActions" style="display: none; margin-top: 20px; padding: 20px; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 8px; border: 2px solid #ddd;">
+    <h3 style="margin: 0 0 15px 0; text-align: center; color: #333; font-size: 18px;">🚀 Quick Actions</h3>
+    <button id="saveImageMappingBtn" class="btn" style="width: 48%; margin-right: 4%; margin-bottom: 10px; background: #607D8B; color: white;">
+        💾 Save All Settings
+    </button>
+    <button id="applyServicesBtn" class="btn" style="width: 48%; margin-bottom: 10px; background: #FF5722; color: white;">
+        ⚡ Apply All Services
+    </button>
+</div>
+
+<div id="previewContainer" style="display: none; margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 4px; border: 1px solid #ddd;">
+    <h3 style="margin: 0 0 15px 0; color: #333;">📋 Preview:</h3>
+    <div id="previewContent"></div>
+</div>
+
+<div id="replaceStatus" class="status"></div>
+
+<script>
+// Toggle function for collapsible sections
+function toggleBulkSection(sectionName) {
+    const content = document.getElementById(sectionName + 'Content');
+    const toggle = document.getElementById(sectionName + 'Toggle');
+    
+    if (content.classList.contains('collapsed')) {
+        content.classList.remove('collapsed');
+        content.style.display = 'block';
+        toggle.textContent = '▼';
+    } else {
+        content.classList.add('collapsed');
+        content.style.display = 'none';
+        toggle.textContent = '▶';
+    }
+}
+
+// Show sections after parse
+function showBulkSections() {
+    document.getElementById('bulkSectionsContainer').style.display = 'block';
+    document.getElementById('mainActions').style.display = 'block';
+}
+</script>

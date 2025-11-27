@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "Find & Replace",
+  "version": "1.0",
+  "description": "Find and replace text on any webpage",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Find & Replace"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "findreplace@example.com",
+      "strict_min_version": "109.0"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}
