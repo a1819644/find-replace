@@ -1,0 +1,47 @@
+Service 1 title - Fridge Repairs
+Service 1 description - Fast Melbourne fridge repairs across all suburbs, plus workshop regassing for lasting cooling.
+Service 1 link - /services/melbourne/domestic/fridge-repair/
+
+Service 2 title - Washing Machine Repairs
+Service 2 description - Melbourne domestic washing machine repairs. We fix leaks, spin cycles, and drainage issues fast for homes, including Bosch and Miele.
+Service 2 link - /services/melbourne/domestic/washing-machine-repairs/
+
+Service 3 title - Ovens Repairs
+Service 3 description - Professional domestic oven repairs Melbourne for gas, electric, and leading brands like Bosch.
+Service 3 link - /services/melbourne/domestic/oven-repair/
+
+Service 4 title - Coffee Machine Repairs
+Service 4 description - Melbourne domestic coffee machine repairs. Expert service for all Miele, Jura, Breville.
+Service 4 link - /services/melbourne/domestic/coffee-machine-repair/
+
+Service 5 title - Dishwasher Repairs
+Service 5 description - Melbourne domestic dishwasher repairs. Resolve cleaning, draining, and Bosch error codes.
+Service 5 link - /services/melbourne/domestic/dishwasher-repair/
+
+Service 6 title - Gas Cooktop Repairs
+Service 6 description - Domestic gas cooktop repairs Melbourne. Fix ignition, burner, and flame control issues fast for homes, including Smeg.
+Service 6 link - /services/melbourne/domestic/gas-cooktop-repair/
+
+Service 7 title - Dish Drawer Repairs
+Service 7 description - Melbourne domestic Dish Drawer repairs. Expert service for all Fisher & Paykel models and drainage issues for Single and Double Dish Drawers
+Service 7 link - /services/melbourne/domestic/dish-draw-repair/
+
+Service 8 title - Dryer Repairs
+Service 8 description - Miele, Bosch, Electrolux  dryer repairs Melbourne. Fast fixes for temperature and safety.
+Service 8 link - /services/melbourne/domestic/dryer-repair/
+
+Service 9 title - Freezer repairs
+Service 9 description - Melbourne domestic freezer repairs. Expert service for Miele, Bosch, Fisher & Paykel, protecting your vital food items from spoiling.
+Service 9 link - /services/melbourne/domestic/freezer-repair/
+
+Service 10 title - Rangehood Repairs
+Service 10 description - Melbourne domestic rangehood repairs for Miele, Bosch, Electrolux. Expertly ensure fresh, clean kitchens.
+Service 10 link - /services/melbourne/domestic/rangehood-repair/
+
+Service 11 title - Vacuum Cleaners Repairs
+Service 11 description - Expert Dyson, Miele, Electrolux and many more vacuum cleaner repairs Melbourne. Reliable suction and optimal home cleaning performance.
+Service 11 link - /services/melbourne/domestic/vaccum-cleaner-repair/
+
+Service 12 title - Commercial Repairs
+Service 12 description - Expert Melbourne Miele, Bosch, Fisher & Paykel appliance service for homes, with reliable warranty
+Service 12 link - /services/melbourne/commercial/

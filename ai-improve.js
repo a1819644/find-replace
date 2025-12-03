@@ -185,19 +185,19 @@ document.addEventListener("DOMContentLoaded", function () {
   const navToTextBtn = document.getElementById("navToTextBtn");
 
   if (navToImagesBtn) {
-    navToImagesBtn.addEventListener("click", function() {
+    navToImagesBtn.addEventListener("click", function () {
       switchTab('images');
     });
   }
 
   if (navToFieldsBtn) {
-    navToFieldsBtn.addEventListener("click", function() {
+    navToFieldsBtn.addEventListener("click", function () {
       switchTab('fields');
     });
   }
 
   if (navToTextBtn) {
-    navToTextBtn.addEventListener("click", function() {
+    navToTextBtn.addEventListener("click", function () {
       switchTab('text');
     });
   }
@@ -259,7 +259,7 @@ document.addEventListener("DOMContentLoaded", function () {
 function toggleBulkSection(sectionName) {
   const content = document.getElementById(sectionName + 'Content');
   const toggle = document.getElementById(sectionName + 'Toggle');
-  
+
   if (content.classList.contains('collapsed')) {
     content.classList.remove('collapsed');
     content.style.display = 'block';
@@ -277,7 +277,7 @@ function showBulkSections() {
   const actions = document.getElementById('mainActions');
   if (container) container.style.display = 'block';
   if (actions) actions.style.display = 'block';
-  
+
   // Open Page Settings by default
   const pageSettingsContent = document.getElementById('pageSettingsContent');
   const pageSettingsToggle = document.getElementById('pageSettingsToggle');
@@ -378,13 +378,13 @@ function loadSettings() {
       if (result.wpSiteUrl) wpSiteUrlInput.value = result.wpSiteUrl;
       if (result.wpUsername) wpUsernameInput.value = result.wpUsername;
       if (result.wpAppPassword) wpAppPasswordInput.value = result.wpAppPassword;
-      
+
       // Load auto-create ACF fields checkbox
       const autoCreateCheckbox = document.getElementById('autoCreateAcfFields');
       if (autoCreateCheckbox) {
         autoCreateCheckbox.checked = result.autoCreateAcfFields || false;
       }
-      
+
       // Load saved image mapping
       if (result.imageMapping) {
         serviceImageMap.clear();
@@ -392,7 +392,7 @@ function loadSettings() {
           serviceImageMap.set(parseInt(serviceNum), imageName);
         });
       }
-      
+
       // Load service page base URL
       if (result.servicePageBaseUrl) {
         const servicePageBaseUrlInput = document.getElementById("servicePageBaseUrl");
@@ -468,11 +468,11 @@ async function testWordPressConnection() {
   try {
     // Clean the password (remove all spaces)
     const cleanPassword = wpAppPassword.replace(/\s/g, '');
-    
+
     // Test connection by fetching site info
     const apiUrl = `${wpSiteUrl.replace(/\/$/, '')}/wp-json/wp/v2/users/me`;
     const credentials = btoa(`${wpUsername}:${cleanPassword}`);
-    
+
     console.log('=== WordPress Connection Test ===');
     console.log('API URL:', apiUrl);
     console.log('Username:', wpUsername);
@@ -494,7 +494,7 @@ async function testWordPressConnection() {
     if (!response.ok) {
       const errorText = await response.text().catch(() => 'No error details');
       console.error('WordPress API Error Response:', errorText);
-      
+
       let errorDetails;
       try {
         errorDetails = JSON.parse(errorText);
@@ -502,11 +502,11 @@ async function testWordPressConnection() {
       } catch (e) {
         console.error('Could not parse error as JSON');
       }
-      
+
       if (response.status === 401) {
         const errorCode = errorDetails?.code || 'unknown';
         const errorMsg = errorDetails?.message || 'Authentication failed';
-        
+
         // Check for specific "rest_not_logged_in" error
         if (errorCode === 'rest_not_logged_in') {
           // Application Passwords completely blocked - offer workaround
@@ -524,7 +524,7 @@ async function testWordPressConnection() {
             '   • Try testing again\n\n' +
             'Choose an option:'
           );
-          
+
           if (useManual) {
             showStatus(settingsStatus, "Use the 'Upload & Assign Images' button - it will open the Manual Helper for you.", "info");
             testBtn.textContent = "Test WordPress Connection";
@@ -536,7 +536,7 @@ async function testWordPressConnection() {
               `Change the password field to your normal login password and test again.`);
           }
         }
-        
+
         throw new Error(`Authentication failed (401)\n\nError: ${errorCode}\nMessage: ${errorMsg}\n\nPossible solutions:\n1. Check username is correct (case-sensitive)\n2. Regenerate Application Password in WordPress\n3. Make sure you copied the FULL password\n4. Try deleting and re-entering credentials in extension`);
       }
       throw new Error(`Connection failed (${response.status}). Check your credentials.`);
@@ -813,9 +813,9 @@ async function scanAndImprove() {
 
     // Track meta
     lastScannedMeta = { url: tab.url || null, title: tab.title || null };
-  // Infer intent from permalink and store globally
-  pageIntent = inferPageIntentFromUrl(tab.url || "");
-  console.log("🔎 Inferred page intent from URL:", pageIntent);
+    // Infer intent from permalink and store globally
+    pageIntent = inferPageIntentFromUrl(tab.url || "");
+    console.log("🔎 Inferred page intent from URL:", pageIntent);
     // Debug: Log the tab URL we're about to scan
     console.log("About to scan tab:", tab.url, "Tab ID:", tab.id);
 
@@ -915,9 +915,8 @@ async function improveTextWithGemini(text, settings, maxWords) {
     permalinkContext = `\nPERMALINK CONTEXT: The URL indicates this is an INDUSTRIAL page.\n- Write for plants, factories, warehouses, heavy-duty contexts.\n- Avoid home-only phrasing.`;
   }
 
-  const prompt = `You are a professional Seo content. Improve the following text for ${
-    settings.brandName || "a business"
-  }.
+  const prompt = `You are a professional Seo content. Improve the following text for ${settings.brandName || "a business"
+    }.
 
 Business Focus: ${settings.businessFocus || "Not specified"}
 Target Audience: ${settings.targetAudience || "General"}
@@ -1044,8 +1043,7 @@ async function improveFieldsInBatches(fields, settings, progressSpan) {
   for (let i = 0; i < fields.length; i += batchSize) {
     const batch = fields.slice(i, i + batchSize);
     console.log(
-      `🔄 Requesting batch ${Math.floor(i / batchSize) + 1} with ${
-        batch.length
+      `🔄 Requesting batch ${Math.floor(i / batchSize) + 1} with ${batch.length
       } field(s)`
     );
 
@@ -1235,8 +1233,8 @@ async function improveBatchWithGemini(batch, settings, pageCtx) {
       typeof candidate.outputText === "string"
         ? candidate.outputText
         : typeof candidate.text === "string"
-        ? candidate.text
-        : "";
+          ? candidate.text
+          : "";
   }
 
   if (!rawText || !rawText.trim()) {
@@ -1249,14 +1247,11 @@ async function improveBatchWithGemini(batch, settings, pageCtx) {
 }
 
 function buildBatchPrompt(batch, settings, pageCtx) {
-  const businessContext = `SEO copywriter for ${
-    settings.brandName || "a business"
-  }.
-Focus: ${settings.businessFocus || "General"} | Audience: ${
-    settings.targetAudience || "General"
-  } | Service Area: ${settings.serviceArea || "N/A"} | Tone: ${
-    settings.tone || "professional"
-  }
+  const businessContext = `SEO copywriter for ${settings.brandName || "a business"
+    }.
+Focus: ${settings.businessFocus || "General"} | Audience: ${settings.targetAudience || "General"
+    } | Service Area: ${settings.serviceArea || "N/A"} | Tone: ${settings.tone || "professional"
+    }
 
 Improve each field for SEO. CRITICAL: Keep the same number of words or UP TO TWO MORE than the original. Only use HTML tags if they exist in original.
 IMPORTANT: If text mentions "same-day" or "same day", always add "(subject to availability*)" after it for accuracy.`;
@@ -1462,8 +1457,8 @@ function displaySuggestions() {
             <div class="field-info">
                 <strong>Type:</strong> ${suggestion.type} | 
                 <strong>Location:</strong> ${escapeHtml(
-                  suggestion.label || "Not specified"
-                )}
+      suggestion.label || "Not specified"
+    )}
             </div>
             <div class="field-meta">
                 <span>Original: <span class="char-count">${originalLength} chars</span></span>
@@ -2231,7 +2226,7 @@ function parseServiceData() {
       `✓ Parsed ${parsedServices.length} services successfully!`,
       "success"
     );
-    
+
     // Show next steps guide
     const nextStepsGuide = document.getElementById("nextStepsGuide");
     if (nextStepsGuide) {
@@ -2386,8 +2381,7 @@ async function applyBulkServices() {
     if (result.applied > 0) {
       showStatus(
         replaceStatus,
-        `✅ Successfully updated ${result.applied} service(s)! ${
-          result.failed > 0 ? `(${result.failed} failed)` : ""
+        `✅ Successfully updated ${result.applied} service(s)! ${result.failed > 0 ? `(${result.failed} failed)` : ""
         }`,
         "success"
       );
@@ -2475,8 +2469,7 @@ function applyServicesToPage(services) {
         }
 
         console.log(
-          `  Checking field - Label: "${labelText.substring(0, 50)}", Name: "${
-            field.name
+          `  Checking field - Label: "${labelText.substring(0, 50)}", Name: "${field.name
           }", ID: "${field.id}"`
         );
 
@@ -2563,7 +2556,7 @@ let serviceImageMapping = new Map(); // Map of service number -> image filename
 function handleImageFolderUpload(event) {
   const files = Array.from(event.target.files);
   const parseStatus = document.getElementById("parseStatus");
-  
+
   if (files.length === 0) {
     showStatus(parseStatus, "No images selected", "error");
     return;
@@ -2578,7 +2571,7 @@ function handleImageFolderUpload(event) {
   });
 
   showStatus(parseStatus, `✓ Loaded ${uploadedImages.size} image(s)`, "success");
-  
+
   // Show image mapping section and populate it
   if (parsedServices.length > 0) {
     displayImageMapping();
@@ -2591,57 +2584,57 @@ function displayImageMapping() {
   const mappingSection = document.getElementById("imageMappingSection");
   const mappingList = document.getElementById("imageMappingList");
   const uploadImagesBtn = document.getElementById("uploadImagesBtn");
-  
+
   if (!mappingSection || !mappingList) return;
-  
+
   mappingSection.style.display = "block";
   mappingList.innerHTML = "";
 
   // Create dropdown options from uploaded images
   const imageOptions = Array.from(uploadedImages.keys()).sort();
-  
+
   parsedServices.forEach(service => {
     const row = document.createElement("div");
     row.style.cssText = "display: flex; gap: 10px; align-items: center; margin-bottom: 8px; padding: 8px; background: white; border-radius: 4px;";
-    
+
     const label = document.createElement("label");
     label.style.cssText = "flex: 0 0 150px; font-size: 12px; font-weight: 500;";
     label.textContent = `Service ${service.number}:`;
-    
+
     const select = document.createElement("select");
     select.style.cssText = "flex: 1; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;";
     select.dataset.serviceNumber = service.number;
-    
+
     // Add options
     const noneOption = document.createElement("option");
     noneOption.value = "";
     noneOption.textContent = "-- No image --";
     select.appendChild(noneOption);
-    
+
     imageOptions.forEach(filename => {
       const option = document.createElement("option");
       option.value = filename;
       option.textContent = filename;
       // Auto-select if filename contains service number or title keyword
       const titleSlug = service.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-      if (filename.toLowerCase().includes(titleSlug) || 
-          filename.includes(`service-${service.number}`) ||
-          filename.includes(`service${service.number}`)) {
+      if (filename.toLowerCase().includes(titleSlug) ||
+        filename.includes(`service-${service.number}`) ||
+        filename.includes(`service${service.number}`)) {
         option.selected = true;
       }
       select.appendChild(option);
     });
-    
+
     // Load saved mapping if exists
     const savedMapping = serviceImageMapping.get(service.number);
     if (savedMapping) {
       select.value = savedMapping;
     }
-    
+
     const preview = document.createElement("span");
     preview.style.cssText = "flex: 0 0 auto; font-size: 11px; color: #666;";
     preview.textContent = service.title;
-    
+
     row.appendChild(label);
     row.appendChild(select);
     row.appendChild(preview);
@@ -2657,11 +2650,11 @@ function displayImageMapping() {
 function saveImageMapping() {
   const mappingList = document.getElementById("imageMappingList");
   const parseStatus = document.getElementById("parseStatus");
-  
+
   if (!mappingList) return;
-  
+
   serviceImageMapping.clear();
-  
+
   const selects = mappingList.querySelectorAll("select");
   selects.forEach(select => {
     const serviceNum = parseInt(select.dataset.serviceNumber);
@@ -2670,10 +2663,10 @@ function saveImageMapping() {
       serviceImageMapping.set(serviceNum, filename);
     }
   });
-  
+
   // Save to storage
   const mappingData = Array.from(serviceImageMapping.entries());
-  browserAPI.storage.local.set({ serviceImageMapping: mappingData }, function() {
+  browserAPI.storage.local.set({ serviceImageMapping: mappingData }, function () {
     showStatus(parseStatus, `✓ Saved image mapping for ${serviceImageMapping.size} service(s)`, "success");
   });
 }
@@ -2686,6 +2679,9 @@ function parseServiceTextData() {
   const serviceTextPreview = document.getElementById("serviceTextPreview");
   const serviceTextPreviewContent = document.getElementById("serviceTextPreviewContent");
 
+  console.log("Raw Input Length:", serviceTextData.length);
+  console.log("Raw Input Preview:", serviceTextData.substring(0, 100));
+
   if (!serviceTextData) {
     showStatus(serviceTextStatus, "Please paste service data first", "error");
     return;
@@ -2694,41 +2690,85 @@ function parseServiceTextData() {
   try {
     parsedServices = [];
     const lines = serviceTextData.split("\n");
+    console.log("Split lines count:", lines.length);
     let currentService = {};
     let serviceNumber = null;
+    let pendingField = null; // Track which field is waiting for a value
 
-    for (const line of lines) {
-      const trimmedLine = line.trim();
+    for (let i = 0; i < lines.length; i++) {
+      const trimmedLine = lines[i].trim();
       if (!trimmedLine) continue;
 
-      // Match: Service X title - Content
-      const titleMatch = trimmedLine.match(
-        /Service\s+(\d+)\s+title\s*-\s*(.+)/i
-      );
-      if (titleMatch) {
-        // Save previous service if exists
+      // FORMAT 1: Match "Service X title - Content" (with hyphen separator on same line)
+      const titleMatchHyphen = trimmedLine.match(/Service\s+(\d+)\s+title\s*-\s*(.+)/i);
+      if (titleMatchHyphen) {
         if (currentService.number) {
           parsedServices.push({ ...currentService });
         }
-        serviceNumber = parseInt(titleMatch[1]);
+        serviceNumber = parseInt(titleMatchHyphen[1]);
         currentService = {
           number: serviceNumber,
-          title: titleMatch[2].trim(),
+          title: titleMatchHyphen[2].trim(),
         };
+        pendingField = null;
         continue;
       }
 
-      // Match: Service X text - Content
-      const textMatch = trimmedLine.match(/Service\s+(\d+)\s+text\s*-\s*(.+)/i);
-      if (textMatch && parseInt(textMatch[1]) === serviceNumber) {
-        currentService.text = textMatch[2].trim();
+      // FORMAT 1: Match "Service X text - Content" (with hyphen separator)
+      const textMatchHyphen = trimmedLine.match(/Service\s+(\d+)\s+text\s*-\s*(.+)/i);
+      if (textMatchHyphen && parseInt(textMatchHyphen[1]) === serviceNumber) {
+        currentService.text = textMatchHyphen[2].trim();
+        pendingField = null;
         continue;
       }
 
-      // Match: Service X url - /url/
-      const urlMatch = trimmedLine.match(/Service\s+(\d+)\s+url\s*-\s*(.+)/i);
-      if (urlMatch && parseInt(urlMatch[1]) === serviceNumber) {
-        currentService.url = urlMatch[2].trim();
+      // FORMAT 1: Match "Service X url - /url/" (with hyphen separator)
+      const urlMatchHyphen = trimmedLine.match(/Service\s+(\d+)\s+url\s*-\s*(.+)/i);
+      if (urlMatchHyphen && parseInt(urlMatchHyphen[1]) === serviceNumber) {
+        currentService.url = urlMatchHyphen[2].trim();
+        pendingField = null;
+        continue;
+      }
+
+      // FORMAT 2: Match "Service X title" (without hyphen, value on next line)
+      const titleLabelMatch = trimmedLine.match(/^Service\s+(\d+)\s+title\s*$/i);
+      if (titleLabelMatch) {
+        if (currentService.number && currentService.number !== parseInt(titleLabelMatch[1])) {
+          parsedServices.push({ ...currentService });
+        }
+        serviceNumber = parseInt(titleLabelMatch[1]);
+        if (!currentService.number || currentService.number !== serviceNumber) {
+          currentService = { number: serviceNumber };
+        }
+        pendingField = 'title';
+        continue;
+      }
+
+      // FORMAT 2: Match "Service X text" (without hyphen, value on next line)
+      const textLabelMatch = trimmedLine.match(/^Service\s+(\d+)\s+text\s*$/i);
+      if (textLabelMatch && parseInt(textLabelMatch[1]) === serviceNumber) {
+        pendingField = 'text';
+        continue;
+      }
+
+      // FORMAT 2: Match "Service X url" (without hyphen, value on next line)
+      const urlLabelMatch = trimmedLine.match(/^Service\s+(\d+)\s+url\s*$/i);
+      if (urlLabelMatch && parseInt(urlLabelMatch[1]) === serviceNumber) {
+        pendingField = 'url';
+        continue;
+      }
+
+      // If we have a pending field, this line is the value for it
+      if (pendingField && serviceNumber !== null) {
+        if (pendingField === 'title') {
+          currentService.title = trimmedLine;
+        } else if (pendingField === 'text') {
+          currentService.text = trimmedLine;
+        } else if (pendingField === 'url') {
+          currentService.url = trimmedLine;
+        }
+        pendingField = null;
+        continue;
       }
     }
 
@@ -2737,8 +2777,10 @@ function parseServiceTextData() {
       parsedServices.push({ ...currentService });
     }
 
+    console.log("Total Parsed Services:", parsedServices.length);
+
     if (parsedServices.length === 0) {
-      showStatus(serviceTextStatus, "No services found. Check your format.", "error");
+      showStatus(serviceTextStatus, `No services found in ${lines.length} lines. Check your format.`, "error");
       return;
     }
 
@@ -2769,6 +2811,7 @@ function parseServiceTextData() {
     showStatus(serviceTextStatus, `Error parsing data: ${error.message}`, "error");
   }
 }
+
 
 async function applyServiceTextToPage() {
   const serviceTextStatus = document.getElementById("serviceTextStatusPage");
@@ -2818,32 +2861,56 @@ async function applyServiceTextToPage() {
     // Apply services to the page
     const results = await browserAPI.scripting.executeScript({
       target: { tabId: tab.id },
-      func: function(services) {
+      func: function (services) {
         let updated = 0;
         let failed = 0;
         const results = [];
-        
+
         console.log('Applying', services.length, 'services to page');
-        
+
         services.forEach((service, index) => {
           try {
             console.log(`Processing service ${service.number}: ${service.title}`);
             let titleUpdated = false, textUpdated = false, urlUpdated = false;
-            
+
             // Find and update service fields
             const allInputs = document.querySelectorAll('input, textarea, select');
-            
+
             allInputs.forEach(field => {
-              const fieldName = field.name || field.id || '';
-              const isTitle = fieldName.includes('title') && (fieldName.includes(`service_${service.number}`) || fieldName.includes(`${service.number}_title`));
-              const isText = (fieldName.includes('text') || fieldName.includes('description')) && (fieldName.includes(`service_${service.number}`) || fieldName.includes(`${service.number}_text`));
-              const isUrl = fieldName.includes('url') && (fieldName.includes(`service_${service.number}`) || fieldName.includes(`${service.number}_url`));
-              
+              let fieldName = field.name || field.id || '';
+              let labelText = '';
+
+              // Strategy 1: Check parent ACF data-name attribute (Most reliable for ACF)
+              const acfFieldParent = field.closest('.acf-field');
+              if (acfFieldParent && acfFieldParent.dataset.name) {
+                fieldName = acfFieldParent.dataset.name;
+              }
+
+              // Strategy 2: Check associated label
+              if (field.id) {
+                const label = document.querySelector(`label[for="${field.id}"]`);
+                if (label) {
+                  labelText = label.textContent.toLowerCase().trim();
+                }
+              }
+
+              // Normalize for matching
+              const normalizedName = fieldName.toLowerCase();
+
+              // Check for matches
+              const isServiceNum = normalizedName.includes(`service_${service.number}`) ||
+                normalizedName.includes(`service ${service.number}`) ||
+                labelText.includes(`service ${service.number}`);
+
+              const isTitle = (normalizedName.includes('title') || labelText.includes('title')) && isServiceNum;
+              const isText = ((normalizedName.includes('text') || normalizedName.includes('description')) || (labelText.includes('text') || labelText.includes('description'))) && isServiceNum;
+              const isUrl = (normalizedName.includes('url') || labelText.includes('url')) && isServiceNum;
+
               if (isTitle && service.title && !titleUpdated) {
                 console.log(`Updating title field: ${fieldName} = "${service.title}"`);
                 field.value = service.title;
                 titleUpdated = true;
-                
+
                 // Trigger change event
                 field.dispatchEvent(new Event('change', { bubbles: true }));
                 field.dispatchEvent(new Event('input', { bubbles: true }));
@@ -2851,7 +2918,7 @@ async function applyServiceTextToPage() {
                 console.log(`Updating text field: ${fieldName} = "${service.text.substring(0, 30)}..."`);
                 field.value = service.text;
                 textUpdated = true;
-                
+
                 // Trigger change event
                 field.dispatchEvent(new Event('change', { bubbles: true }));
                 field.dispatchEvent(new Event('input', { bubbles: true }));
@@ -2859,13 +2926,13 @@ async function applyServiceTextToPage() {
                 console.log(`Updating URL field: ${fieldName} = "${service.url}"`);
                 field.value = service.url;
                 urlUpdated = true;
-                
+
                 // Trigger change event
                 field.dispatchEvent(new Event('change', { bubbles: true }));
                 field.dispatchEvent(new Event('input', { bubbles: true }));
               }
             });
-            
+
             if (titleUpdated || textUpdated || urlUpdated) {
               updated++;
               results.push(`✓ Service ${service.number}: ${[titleUpdated && 'title', textUpdated && 'text', urlUpdated && 'url'].filter(Boolean).join(', ')}`);
@@ -2879,14 +2946,14 @@ async function applyServiceTextToPage() {
             console.error('Error applying service', service.number, error);
           }
         });
-        
+
         return { applied: updated, failed: failed, results: results };
       },
       args: [parsedServices]
     });
 
     const { applied, failed, results: resultsList } = results[0].result;
-    
+
     if (applied > 0) {
       showStatus(
         serviceTextStatus,
@@ -2919,23 +2986,23 @@ async function applyServiceTextToPage() {
 async function uploadAndAssignImages() {
   const replaceStatus = document.getElementById("replaceStatus");
   const uploadImagesBtn = document.getElementById("uploadImagesBtn");
-  
+
   if (serviceImageMapping.size === 0) {
     showStatus(replaceStatus, "No images mapped. Please map images to services first.", "error");
     return;
   }
-  
+
   // Save mapping first
   saveImageMapping();
-  
+
   uploadImagesBtn.textContent = "⏳ Preparing images...";
   uploadImagesBtn.disabled = true;
-  
+
   try {
     // Get target URL
     const targetPageUrlInput = document.getElementById("targetPageUrl");
     const targetUrl = targetPageUrlInput ? targetPageUrlInput.value.trim() : "";
-    
+
     let tab;
     if (targetUrl) {
       const allTabs = await browserAPI.tabs.query({});
@@ -2948,14 +3015,14 @@ async function uploadAndAssignImages() {
       const tabs = await browserAPI.tabs.query({ active: true, currentWindow: true });
       tab = tabs[0];
     }
-    
+
     if (!tab || tab.url.startsWith("chrome-extension://") || tab.url.startsWith("moz-extension://")) {
       showStatus(replaceStatus, "❌ Please provide a website URL", "error");
       uploadImagesBtn.textContent = "📸 Upload & Assign Images";
       uploadImagesBtn.disabled = false;
       return;
     }
-    
+
     // Convert images to data URLs for injection
     const imageData = [];
     for (const [serviceNum, filename] of serviceImageMapping.entries()) {
@@ -2970,18 +3037,18 @@ async function uploadAndAssignImages() {
         });
       }
     }
-    
+
     uploadImagesBtn.textContent = `⏳ Uploading ${imageData.length} image(s)...`;
-    
+
     // Inject script to handle image uploads in WordPress
     const results = await browserAPI.scripting.executeScript({
       target: { tabId: tab.id },
       func: uploadImagesToWordPress,
       args: [imageData, parsedServices]
     });
-    
+
     const result = results[0].result;
-    
+
     if (result.success) {
       uploadImagesBtn.textContent = `✅ Uploaded ${result.uploaded} image(s)!`;
       uploadImagesBtn.style.background = "#4CAF50";
@@ -2991,7 +3058,7 @@ async function uploadAndAssignImages() {
       uploadImagesBtn.style.background = "#f44336";
       showStatus(replaceStatus, `Error: ${result.error}`, "error");
     }
-    
+
   } catch (error) {
     console.error("Image upload error:", error);
     showStatus(replaceStatus, `Error: ${error.message}`, "error");
@@ -3020,10 +3087,10 @@ function fileToDataUrl(file) {
 function uploadImagesToWordPress(imageData, services) {
   console.log("=== WordPress Image Upload Started ===");
   console.log(`Images to upload: ${imageData.length}`);
-  
+
   let uploaded = 0;
   let failed = 0;
-  
+
   try {
     // For WordPress/Elementor, look for featured image upload buttons or media library buttons
     imageData.forEach(img => {
@@ -3033,20 +3100,20 @@ function uploadImagesToWordPress(imageData, services) {
         failed++;
         return;
       }
-      
+
       console.log(`Processing image for Service ${img.serviceNumber}: ${service.title}`);
-      
+
       // Strategy 1: Look for featured image button
       const featuredImageBtn = document.querySelector('[data-setting="featured_image"], .editor-post-featured-image__toggle, #set-post-thumbnail, .components-button[aria-label*="featured image" i]');
-      
+
       // Strategy 2: Look for Yoast/Elementor image fields
       const imageFields = document.querySelectorAll('input[type="text"][id*="image"], input[type="url"][id*="image"], input[name*="image"]');
-      
+
       // Strategy 3: Store in a global variable for manual WordPress upload
       if (!window.pendingImageUploads) {
         window.pendingImageUploads = [];
       }
-      
+
       window.pendingImageUploads.push({
         serviceNumber: img.serviceNumber,
         serviceTitle: service.title,
@@ -3054,11 +3121,11 @@ function uploadImagesToWordPress(imageData, services) {
         dataUrl: img.dataUrl,
         instructions: `Upload "${img.filename}" for Service ${img.serviceNumber}: ${service.title}`
       });
-      
+
       console.log(`✓ Queued: ${img.filename} for Service ${img.serviceNumber}`);
       uploaded++;
     });
-    
+
     // Create a helper UI to guide manual upload
     const helper = document.createElement("div");
     helper.id = "image-upload-helper";
@@ -3083,9 +3150,9 @@ function uploadImagesToWordPress(imageData, services) {
       <p style="font-size: 10px; color: #999; margin: 8px 0 0 0; text-align: center;">Images are stored in browser memory. Open WordPress media library and upload them manually.</p>
     `;
     document.body.appendChild(helper);
-    
+
     // Add download function
-    window.downloadAllImages = function() {
+    window.downloadAllImages = function () {
       window.pendingImageUploads.forEach(img => {
         const link = document.createElement('a');
         link.href = img.dataUrl;
@@ -3096,14 +3163,14 @@ function uploadImagesToWordPress(imageData, services) {
       });
       alert(`Downloading ${window.pendingImageUploads.length} images. Check your downloads folder!`);
     };
-    
+
     return {
       success: true,
       uploaded: uploaded,
       failed: failed,
       message: `Prepared ${uploaded} image(s). Use the helper panel to upload them in WordPress.`
     };
-    
+
   } catch (error) {
     console.error("Error preparing images:", error);
     return {
@@ -3122,14 +3189,14 @@ let serviceImageMap = new Map(); // serviceNumber -> imageName
 
 function displayImageMappingUI() {
   const imageMappingList = document.getElementById("imageMappingList");
-  
+
   if (!parsedServices || parsedServices.length === 0) {
     showBulkSections(); // Show the new organized sections
     return;
   }
-  
+
   showBulkSections(); // Show the new organized sections
-  
+
   // Generate individual inputs for each service
   imageMappingList.innerHTML = parsedServices.map(service => {
     const suggestedFilename = service.title
@@ -3137,7 +3204,7 @@ function displayImageMappingUI() {
       .replace(/[^a-z0-9\s-]/g, '')
       .trim()
       .replace(/\s+/g, '-') + '.jpg';
-    
+
     return `
     <div style="padding: 10px; margin: 8px 0; background: white; border: 1px solid #ddd; border-radius: 4px;">
       <div style="font-weight: 600; color: #333; margin-bottom: 5px;">
@@ -3159,24 +3226,24 @@ let serviceImageUrlMap = new Map(); // serviceNumber -> imageUrl
 
 function applyBulkImageUrlsToServices() {
   const bulkImageUrls = document.getElementById("bulkImageUrls").value.trim();
-  
+
   if (!bulkImageUrls) {
     alert("Please paste image URLs first (one per line)");
     return;
   }
-  
+
   const imageUrls = bulkImageUrls.split('\n').map(u => u.trim()).filter(Boolean);
-  
+
   if (imageUrls.length < parsedServices.length) {
     if (!confirm(`You provided ${imageUrls.length} image URLs but have ${parsedServices.length} services. Continue anyway?`)) {
       return;
     }
   }
-  
+
   // Clear existing mappings
   serviceImageMap.clear();
   serviceImageUrlMap.clear();
-  
+
   // Apply to service image URL map
   parsedServices.forEach((service, index) => {
     const imageUrl = imageUrls[index] || '';
@@ -3188,10 +3255,10 @@ function applyBulkImageUrlsToServices() {
       serviceImageMap.set(service.number, `[UPLOAD] ${filename}`);
     }
   });
-  
+
   // Refresh the UI
   displayImageMappingUI();
-  
+
   showStatus(
     document.getElementById("parseStatus"),
     `✓ Applied ${Math.min(imageUrls.length, parsedServices.length)} image URLs for upload`,
@@ -3209,21 +3276,21 @@ function saveImageMapping() {
       serviceImageMap.delete(service.number);
     }
   });
-  
+
   // Get service page base URL
   const servicePageBaseUrlInput = document.getElementById("servicePageBaseUrl");
   const servicePageBaseUrl = servicePageBaseUrlInput ? servicePageBaseUrlInput.value.trim() : '';
-  
+
   // Save to storage
   const mappingData = {};
   serviceImageMap.forEach((imageName, serviceNum) => {
     mappingData[serviceNum] = imageName;
   });
-  
-  browserAPI.storage.local.set({ 
+
+  browserAPI.storage.local.set({
     imageMapping: mappingData,
     servicePageBaseUrl: servicePageBaseUrl
-  }, function() {
+  }, function () {
     showStatus(
       document.getElementById("parseStatus"),
       "✓ Image mapping and page URL saved!",
@@ -3240,31 +3307,31 @@ async function applyCustomAcfField() {
   const customFieldStatus = document.getElementById("customFieldStatus");
   const fieldNameInput = document.getElementById("customFieldName");
   const imageUrlInput = document.getElementById("customFieldImageUrl");
-  
+
   const fieldName = fieldNameInput.value.trim();
   const imageUrl = imageUrlInput.value.trim();
-  
+
   if (!fieldName) {
     showStatus(customFieldStatus, "❌ Please enter an ACF field name", "error");
     return;
   }
-  
+
   // Validate field name format
   if (!/^[a-z0-9_]+$/.test(fieldName)) {
     showStatus(customFieldStatus, "❌ ACF field name must be lowercase with underscores only (e.g., hero_section_background_image)", "error");
     return;
   }
-  
+
   if (!imageUrl) {
     showStatus(customFieldStatus, "❌ Please enter an image URL", "error");
     return;
   }
-  
+
   console.log(`🎯 Custom field request: ${fieldName} = ${imageUrl}`);
-  
+
   customFieldBtn.disabled = true;
   customFieldBtn.textContent = "⏳ Processing...";
-  
+
   try {
     // Get WordPress settings
     const settings = await new Promise((resolve) => {
@@ -3273,29 +3340,29 @@ async function applyCustomAcfField() {
         resolve
       );
     });
-    
+
     const wpSiteUrl = settings.wpSiteUrl?.trim();
     const wpUsername = settings.wpUsername?.trim();
     const wpAppPassword = settings.wpAppPassword?.trim();
-    
+
     if (!wpSiteUrl || !wpUsername || !wpAppPassword) {
       showStatus(customFieldStatus, "❌ Please configure WordPress credentials in Settings", "error");
       customFieldBtn.textContent = "✨ Add/Update Custom Field";
       customFieldBtn.disabled = false;
       return;
     }
-    
+
     const credentials = btoa(`${wpUsername}:${wpAppPassword}`);
-    
+
     // Get current page
     const tabs = await browserAPI.tabs.query({ active: true, currentWindow: true });
     const currentTab = tabs[0];
     const currentUrl = currentTab.url;
-    
+
     // Try to extract post ID from WordPress admin URL
     let postId = null;
     const postIdMatch = currentUrl.match(/[?&]post=(\d+)/);
-    
+
     if (postIdMatch) {
       postId = postIdMatch[1];
       console.log(`✓ Detected post ID: ${postId}`);
@@ -3305,13 +3372,13 @@ async function applyCustomAcfField() {
       customFieldBtn.disabled = false;
       return;
     }
-    
+
     customFieldBtn.textContent = "🔍 Finding image...";
-    
+
     // Extract filename from image URL
     const filename = imageUrl.split('/').pop().split('?')[0];
     console.log(`🔍 Searching for image: ${filename}`);
-    
+
     // Search for image in WordPress media library
     const searchUrl = `${wpSiteUrl}/wp-json/wp/v2/media?search=${encodeURIComponent(filename)}&per_page=10`;
     const searchResponse = await fetch(searchUrl, {
@@ -3321,20 +3388,20 @@ async function applyCustomAcfField() {
         "Content-Type": "application/json",
       },
     });
-    
+
     if (!searchResponse.ok) {
       throw new Error(`Failed to search media: ${searchResponse.status}`);
     }
-    
+
     const mediaResults = await searchResponse.json();
-    
+
     // Find exact match by URL or filename
     let mediaId = null;
-    const foundMedia = mediaResults.find(media => 
-      media.source_url === imageUrl || 
+    const foundMedia = mediaResults.find(media =>
+      media.source_url === imageUrl ||
       media.source_url.includes(filename)
     );
-    
+
     if (foundMedia) {
       mediaId = foundMedia.id;
       console.log(`✓ Found image: ${foundMedia.title.rendered} (ID: ${mediaId})`);
@@ -3344,14 +3411,14 @@ async function applyCustomAcfField() {
       customFieldBtn.disabled = false;
       return;
     }
-    
+
     customFieldBtn.textContent = "💾 Updating field...";
-    
+
     // Get auto-create setting
-    const autoCreateEnabled = (await new Promise(resolve => 
+    const autoCreateEnabled = (await new Promise(resolve =>
       browserAPI.storage.local.get(['autoCreateAcfFields'], resolve)
     )).autoCreateAcfFields || false;
-    
+
     // First, get the current page data to check if field exists
     const checkUrl = `${wpSiteUrl}/wp-json/wp/v2/pages/${postId}`;
     const checkResponse = await fetch(checkUrl, {
@@ -3361,22 +3428,22 @@ async function applyCustomAcfField() {
         "Content-Type": "application/json",
       },
     });
-    
+
     if (!checkResponse.ok) {
       throw new Error(`Failed to fetch page: ${checkResponse.status}`);
     }
-    
+
     const pageData = await checkResponse.json();
     const fieldExists = pageData.acf && pageData.acf[fieldName] !== undefined;
-    
+
     console.log(`📋 Field ${fieldName} exists:`, fieldExists);
     console.log(`📋 Current ACF fields:`, pageData.acf ? Object.keys(pageData.acf) : 'none');
-    
+
     // If field doesn't exist and auto-create is enabled, initialize it first
     if (!fieldExists && autoCreateEnabled) {
       console.log(`✨ Creating field ${fieldName} with auto-create...`);
       customFieldBtn.textContent = "✨ Creating field...";
-      
+
       const initPayload = {
         acf: {
           [fieldName]: ''
@@ -3386,7 +3453,7 @@ async function applyCustomAcfField() {
           [`_${fieldName}`]: 'field_auto_created'
         }
       };
-      
+
       const initResponse = await fetch(checkUrl, {
         method: "POST",
         headers: {
@@ -3395,7 +3462,7 @@ async function applyCustomAcfField() {
         },
         body: JSON.stringify(initPayload),
       });
-      
+
       if (initResponse.ok) {
         console.log(`✅ Field ${fieldName} initialized`);
         customFieldBtn.textContent = "💾 Updating with image...";
@@ -3408,7 +3475,7 @@ async function applyCustomAcfField() {
       customFieldBtn.disabled = false;
       return;
     }
-    
+
     // Update the ACF field with the media ID
     const updatePayload = {
       acf: {
@@ -3419,9 +3486,9 @@ async function applyCustomAcfField() {
         [`_${fieldName}`]: mediaId
       }
     };
-    
+
     console.log(`📤 Updating ${fieldName} with image ID ${mediaId}`);
-    
+
     const updateUrl = `${wpSiteUrl}/wp-json/wp/v2/pages/${postId}`;
     const updateResponse = await fetch(updateUrl, {
       method: "POST",
@@ -3431,17 +3498,17 @@ async function applyCustomAcfField() {
       },
       body: JSON.stringify(updatePayload),
     });
-    
+
     if (!updateResponse.ok) {
       const errorData = await updateResponse.json();
       console.error("❌ Update failed:", errorData);
       throw new Error(`Failed to update field: ${updateResponse.status}`);
     }
-    
+
     const responseData = await updateResponse.json();
     console.log(`✅ Update response:`, responseData);
     console.log(`📋 Response ACF fields:`, responseData.acf);
-    
+
     // Check if field was actually updated
     if (responseData.acf && responseData.acf[fieldName] !== undefined) {
       const fieldValue = responseData.acf[fieldName];
@@ -3461,10 +3528,10 @@ async function applyCustomAcfField() {
         console.warn(`⚠️ Field ${fieldName} not in response. This may be normal if ACF REST API isn't fully configured.`);
       }
     }
-    
+
     customFieldBtn.textContent = "✨ Add/Update Custom Field";
     customFieldBtn.disabled = false;
-    
+
   } catch (error) {
     console.error("❌ Error updating custom field:", error);
     showStatus(customFieldStatus, `❌ Error: ${error.message}`, "error");
@@ -3476,15 +3543,15 @@ async function applyCustomAcfField() {
 async function uploadAndAssignImagesViaAPI() {
   const uploadBtn = document.getElementById("uploadAndAssignImagesBtn");
   const replaceStatus = document.getElementById("replaceStatus");
-  
+
   if (serviceImageMap.size === 0) {
     showStatus(replaceStatus, "No image mappings defined. Please specify images first.", "error");
     return;
   }
-  
+
   uploadBtn.textContent = "⏳ Uploading images...";
   uploadBtn.disabled = true;
-  
+
   try {
     // Get WordPress settings and service page base URL
     const settings = await new Promise((resolve) => {
@@ -3493,36 +3560,36 @@ async function uploadAndAssignImagesViaAPI() {
         resolve
       );
     });
-    
+
     const wpSiteUrl = settings.wpSiteUrl ? settings.wpSiteUrl.replace(/\/$/, '') : '';
     const servicePageBaseUrl = settings.servicePageBaseUrl ? settings.servicePageBaseUrl.replace(/\/$/, '') : '';
-    
+
     if (!wpSiteUrl) {
       showStatus(replaceStatus, "Please configure WordPress Site URL in Settings tab first.", "error");
       uploadBtn.textContent = "📸 Upload & Assign Images via WordPress API";
       uploadBtn.disabled = false;
       return;
     }
-    
+
     if (!settings.wpUsername || !settings.wpAppPassword) {
       showStatus(replaceStatus, "Please configure WordPress credentials in Settings tab first.", "error");
       uploadBtn.textContent = "📸 Upload & Assign Images via WordPress API";
       uploadBtn.disabled = false;
       return;
     }
-    
+
     const credentials = btoa(`${settings.wpUsername}:${settings.wpAppPassword.replace(/\s/g, '')}`);
-    
+
     // Check if local WordPress (doesn't support Application Passwords by default)
-    const isLocalWP = wpSiteUrl.includes('.local') || 
-                     wpSiteUrl.includes('localhost') || 
-                     wpSiteUrl.includes('127.0.0.1') ||
-                     wpSiteUrl.includes('192.168.');
-    
+    const isLocalWP = wpSiteUrl.includes('.local') ||
+      wpSiteUrl.includes('localhost') ||
+      wpSiteUrl.includes('127.0.0.1') ||
+      wpSiteUrl.includes('192.168.');
+
     // If local WordPress, test connection first before showing dialog
     if (isLocalWP) {
       showStatus(replaceStatus, "Testing authentication...", "info");
-      
+
       try {
         // Quick test to see if REST API auth is working
         const testUrl = `${wpSiteUrl}/wp-json/wp/v2/users/me`;
@@ -3533,7 +3600,7 @@ async function uploadAndAssignImagesViaAPI() {
             "Content-Type": "application/json",
           },
         });
-        
+
         // If authentication works, proceed normally
         if (testResponse.ok) {
           console.log("✅ Local WordPress authentication working! Proceeding with API...");
@@ -3553,7 +3620,7 @@ async function uploadAndAssignImagesViaAPI() {
             "• Install the REST API Enabler plugin\n\n" +
             "Choose your option:"
           );
-          
+
           if (choice) {
             // User clicked OK - use manual helper
             await assignImagesViaWordPressAdmin();
@@ -3576,18 +3643,18 @@ async function uploadAndAssignImagesViaAPI() {
         return;
       }
     }
-    
+
     // Main processing logic
     try {
       // Get the current page URL (the main commercial page with all service fields)
       const tabs = await browserAPI.tabs.query({ active: true, currentWindow: true });
       const currentTab = tabs[0];
       const currentUrl = currentTab.url;
-      
+
       // Try to extract post ID directly from WordPress admin URL
       let postId = null;
       let pageSlug = '';
-      
+
       const postIdMatch = currentUrl.match(/[?&]post=(\d+)/);
       if (postIdMatch) {
         postId = postIdMatch[1];
@@ -3608,11 +3675,11 @@ async function uploadAndAssignImagesViaAPI() {
         }
         console.log(`✓ Using current tab URL - looking for slug: ${pageSlug}`);
       }
-      
+
       // Find the page (either by ID or slug)
       let postsUrl;
       let postsResponse;
-      
+
       if (postId) {
         // Direct access by post ID
         postsUrl = `${wpSiteUrl}/wp-json/wp/v2/pages/${postId}`;
@@ -3631,7 +3698,7 @@ async function uploadAndAssignImagesViaAPI() {
         postsUrl = `${wpSiteUrl}/wp-json/wp/v2/pages?slug=${pageSlug}&per_page=1`;
         console.log(`Looking for page by slug: ${pageSlug}`);
       }
-      
+
       postsResponse = await fetch(postsUrl, {
         method: "GET",
         headers: {
@@ -3639,11 +3706,11 @@ async function uploadAndAssignImagesViaAPI() {
           "Content-Type": "application/json",
         },
       });
-      
+
       if (!postsResponse.ok) {
         throw new Error(`Failed to find page: ${postsResponse.status}`);
       }
-      
+
       // Handle response - direct ID returns object, slug search returns array
       let pageData;
       if (postId) {
@@ -3658,57 +3725,57 @@ async function uploadAndAssignImagesViaAPI() {
         }
         pageData = posts[0];
       }
-      
+
       postId = pageData.id;
       const pageTitle = pageData.title.rendered;
       console.log(`✓ Found page: ${pageTitle} (ID: ${postId})`);
-      
+
       // Log current ACF fields to see what's available
       console.log(`📋 Current page ACF fields:`, pageData.acf);
       console.log(`📋 Current page meta:`, pageData.meta);
-      
+
       // IMPORTANT: Log all ACF field names that contain 'service' or 'image'
       if (pageData.acf) {
-        const serviceFields = Object.keys(pageData.acf).filter(key => 
+        const serviceFields = Object.keys(pageData.acf).filter(key =>
           key.toLowerCase().includes('service') || key.toLowerCase().includes('image')
         );
         console.log(`🔍 Found ACF fields with 'service' or 'image':`, serviceFields);
-        
+
         // Show example values
         serviceFields.slice(0, 3).forEach(fieldName => {
           console.log(`   ${fieldName} = ${pageData.acf[fieldName]}`);
         });
       }
-      
+
       // Determine which map to use (URLs take priority)
       const hasImageUrls = serviceImageUrlMap.size > 0;
       const processingMap = hasImageUrls ? serviceImageUrlMap : serviceImageMap;
-      
+
       if (processingMap.size === 0) {
         showStatus(replaceStatus, "❌ No images to process. Please apply image URLs first.", "error");
         uploadBtn.textContent = "📸 Upload & Assign Images via WordPress API";
         uploadBtn.disabled = false;
         return;
       }
-      
+
       // Check if auto-create ACF fields is enabled
-      const autoCreateEnabled = (await new Promise(resolve => 
+      const autoCreateEnabled = (await new Promise(resolve =>
         browserAPI.storage.local.get(['autoCreateAcfFields'], resolve)
       )).autoCreateAcfFields || false;
-      
+
       if (autoCreateEnabled) {
         console.log(`✨ Auto-create ACF fields is enabled - checking for missing fields...`);
-        
+
         // Check which service fields are missing
         const missingFields = [];
         const numServices = processingMap.size;
-        
+
         for (let i = 1; i <= numServices; i++) {
           const imageField = `service_${i}_image`;
           const titleField = `service_${i}_title`;
           const textField = `service_${i}_text`;
           const urlField = `service_${i}_url`;
-          
+
           if (!pageData.acf || pageData.acf[imageField] === undefined) {
             missingFields.push(imageField);
           }
@@ -3722,14 +3789,14 @@ async function uploadAndAssignImagesViaAPI() {
             missingFields.push(urlField);
           }
         }
-        
+
         if (missingFields.length > 0) {
           console.log(`📝 Creating ${missingFields.length} missing ACF fields:`, missingFields);
           uploadBtn.textContent = `⏳ Creating ${missingFields.length} ACF fields...`;
-          
+
           // Initialize fields with empty values via WordPress meta
           const initPayload = { meta: {}, acf: {} };
-          
+
           missingFields.forEach(fieldName => {
             if (fieldName.includes('_image')) {
               initPayload.acf[fieldName] = '';  // Empty for image
@@ -3740,7 +3807,7 @@ async function uploadAndAssignImagesViaAPI() {
               initPayload.meta[fieldName] = '';
             }
           });
-          
+
           try {
             const initResponse = await fetch(`${wpSiteUrl}/wp-json/wp/v2/pages/${postId}`, {
               method: "POST",
@@ -3750,7 +3817,7 @@ async function uploadAndAssignImagesViaAPI() {
               },
               body: JSON.stringify(initPayload),
             });
-            
+
             if (initResponse.ok) {
               console.log(`✅ Successfully initialized ${missingFields.length} ACF fields!`);
               // Refresh page data to get new fields
@@ -3766,41 +3833,121 @@ async function uploadAndAssignImagesViaAPI() {
           console.log(`✅ All required ACF fields already exist!`);
         }
       }
-      
+
       showStatus(replaceStatus, `Processing ${processingMap.size} service images...`, "info");
-      
+
       let assigned = 0;
       let failed = 0;
-      
+
       // Object to collect all ACF field updates
       const acfUpdates = {};
       const metaUpdates = {};
-      
+
       // Process each service image
       for (const [serviceNum, imageData] of processingMap.entries()) {
-      try {
-        const service = parsedServices.find(s => s.number === serviceNum);
-        const serviceTitle = service ? service.title : `Service ${serviceNum}`;
-        
-        uploadBtn.textContent = `⏳ Processing ${serviceTitle}...`;
-        
-        let mediaId;
-        
-        // Check if this is an image URL (for upload) or image name (for search)
-        const isUrl = imageData.startsWith('http://') || imageData.startsWith('https://');
-        
-        if (isUrl) {
-          // Image URL provided - find it in WordPress media library
-          const imageUrl = imageData;
-          console.log(`Finding image in WordPress: ${imageUrl}`);
-          
-          try {
-            // Extract filename from URL
-            const filename = imageUrl.split('/').pop().split('?')[0];
-            console.log(`Searching for filename: ${filename}`);
-            
-            // Search WordPress media library for this file
-            const searchUrl = `${wpSiteUrl}/wp-json/wp/v2/media?search=${encodeURIComponent(filename)}&per_page=10`;
+        try {
+          const service = parsedServices.find(s => s.number === serviceNum);
+          const serviceTitle = service ? service.title : `Service ${serviceNum}`;
+
+          uploadBtn.textContent = `⏳ Processing ${serviceTitle}...`;
+
+          let mediaId;
+
+          // Check if this is an image URL (for upload) or image name (for search)
+          const isUrl = imageData.startsWith('http://') || imageData.startsWith('https://');
+
+          if (isUrl) {
+            // Image URL provided - find it in WordPress media library
+            const imageUrl = imageData;
+            console.log(`Finding image in WordPress: ${imageUrl}`);
+
+            try {
+              // Extract filename from URL
+              const filename = imageUrl.split('/').pop().split('?')[0];
+              console.log(`Searching for filename: ${filename}`);
+
+              // Search WordPress media library for this file
+              const searchUrl = `${wpSiteUrl}/wp-json/wp/v2/media?search=${encodeURIComponent(filename)}&per_page=10`;
+              const searchResponse = await fetch(searchUrl, {
+                method: "GET",
+                headers: {
+                  "Authorization": `Basic ${credentials}`,
+                  "Content-Type": "application/json",
+                },
+              });
+
+              if (!searchResponse.ok) {
+                throw new Error(`Failed to search media library: ${searchResponse.status}`);
+              }
+
+              const mediaItems = await searchResponse.json();
+
+              // Find exact match by checking the source_url
+              let foundMedia = mediaItems.find(item => item.source_url === imageUrl);
+
+              // If not found by exact URL, try to find by filename
+              if (!foundMedia && mediaItems.length > 0) {
+                foundMedia = mediaItems.find(item => item.source_url.includes(filename));
+              }
+
+              if (!foundMedia && mediaItems.length > 0) {
+                // Just use the first result
+                foundMedia = mediaItems[0];
+                console.warn(`⚠️ Exact match not found, using: ${foundMedia.source_url}`);
+              }
+
+              if (!foundMedia) {
+                throw new Error(`Image not found in WordPress media library: ${filename}`);
+              }
+
+              mediaId = foundMedia.id;
+              console.log(`✓ Found image in WordPress: ${foundMedia.title.rendered} (ID: ${mediaId})`);
+
+              // Update metadata
+              if (service) {
+                try {
+                  const metadataUrl = `${wpSiteUrl}/wp-json/wp/v2/media/${mediaId}`;
+                  const metadataPayload = {
+                    title: serviceTitle,
+                    alt_text: serviceTitle
+                  };
+
+                  if (service.text) {
+                    metadataPayload.caption = service.text.substring(0, 200);
+                    metadataPayload.description = service.text;
+                  }
+
+                  const metadataResponse = await fetch(metadataUrl, {
+                    method: "POST",
+                    headers: {
+                      "Authorization": `Basic ${credentials}`,
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(metadataPayload),
+                  });
+
+                  if (metadataResponse.ok) {
+                    console.log(`✓ Updated metadata for ${filename}`);
+                  } else {
+                    console.warn(`⚠️ Failed to update metadata`);
+                  }
+                } catch (metaError) {
+                  console.warn(`⚠️ Error updating metadata:`, metaError);
+                }
+              }
+
+              assigned++;
+
+            } catch (findError) {
+              console.error(`Failed to find image for ${serviceTitle}:`, findError);
+              failed++;
+              continue;
+            }
+
+          } else {
+            // SEARCH FOR EXISTING IMAGE in media library
+            const imageName = imageData;
+            const searchUrl = `${wpSiteUrl}/wp-json/wp/v2/media?search=${encodeURIComponent(imageName)}&per_page=5`;
             const searchResponse = await fetch(searchUrl, {
               method: "GET",
               headers: {
@@ -3808,35 +3955,23 @@ async function uploadAndAssignImagesViaAPI() {
                 "Content-Type": "application/json",
               },
             });
-            
+
             if (!searchResponse.ok) {
               throw new Error(`Failed to search media library: ${searchResponse.status}`);
             }
-            
+
             const mediaItems = await searchResponse.json();
-            
-            // Find exact match by checking the source_url
-            let foundMedia = mediaItems.find(item => item.source_url === imageUrl);
-            
-            // If not found by exact URL, try to find by filename
-            if (!foundMedia && mediaItems.length > 0) {
-              foundMedia = mediaItems.find(item => item.source_url.includes(filename));
+
+            if (mediaItems.length === 0) {
+              console.warn(`Image not found in media library: ${imageName}`);
+              failed++;
+              continue;
             }
-            
-            if (!foundMedia && mediaItems.length > 0) {
-              // Just use the first result
-              foundMedia = mediaItems[0];
-              console.warn(`⚠️ Exact match not found, using: ${foundMedia.source_url}`);
-            }
-            
-            if (!foundMedia) {
-              throw new Error(`Image not found in WordPress media library: ${filename}`);
-            }
-            
-            mediaId = foundMedia.id;
-            console.log(`✓ Found image in WordPress: ${foundMedia.title.rendered} (ID: ${mediaId})`);
-            
-            // Update metadata
+
+            mediaId = mediaItems[0].id;
+            console.log(`Found image: ${imageName} (ID: ${mediaId})`);
+
+            // Update metadata for existing images
             if (service) {
               try {
                 const metadataUrl = `${wpSiteUrl}/wp-json/wp/v2/media/${mediaId}`;
@@ -3844,12 +3979,12 @@ async function uploadAndAssignImagesViaAPI() {
                   title: serviceTitle,
                   alt_text: serviceTitle
                 };
-                
+
                 if (service.text) {
                   metadataPayload.caption = service.text.substring(0, 200);
                   metadataPayload.description = service.text;
                 }
-                
+
                 const metadataResponse = await fetch(metadataUrl, {
                   method: "POST",
                   headers: {
@@ -3858,227 +3993,159 @@ async function uploadAndAssignImagesViaAPI() {
                   },
                   body: JSON.stringify(metadataPayload),
                 });
-                
+
                 if (metadataResponse.ok) {
-                  console.log(`✓ Updated metadata for ${filename}`);
+                  console.log(`✓ Updated metadata for ${imageName}`);
                 } else {
-                  console.warn(`⚠️ Failed to update metadata`);
+                  console.warn(`⚠️ Failed to update metadata for ${imageName}`);
                 }
               } catch (metaError) {
                 console.warn(`⚠️ Error updating metadata:`, metaError);
               }
             }
-            
-            assigned++;
-            
-          } catch (findError) {
-            console.error(`Failed to find image for ${serviceTitle}:`, findError);
-            failed++;
-            continue;
           }
-          
-        } else {
-          // SEARCH FOR EXISTING IMAGE in media library
-          const imageName = imageData;
-          const searchUrl = `${wpSiteUrl}/wp-json/wp/v2/media?search=${encodeURIComponent(imageName)}&per_page=5`;
-          const searchResponse = await fetch(searchUrl, {
+
+          // Add to ACF updates object (will update all at once)
+          acfUpdates[`service_${serviceNum}_image`] = mediaId;
+          metaUpdates[`service_${serviceNum}_image`] = mediaId;
+          metaUpdates[`_service_${serviceNum}_image`] = mediaId;
+
+          console.log(`✓ Prepared Service ${serviceNum} image (ID: ${mediaId})`);
+          assigned++;
+
+        } catch (error) {
+          console.error(`Error processing Service ${serviceNum}:`, error);
+          failed++;
+        }
+      }
+
+      // Now update ALL service images on the page in one API call
+      if (Object.keys(acfUpdates).length > 0) {
+        uploadBtn.textContent = `⏳ Updating page with ${assigned} images...`;
+
+        try {
+          // First, check if this is an Elementor page
+          const checkUrl = `${wpSiteUrl}/wp-json/wp/v2/pages/${postId}`;
+          const checkResponse = await fetch(checkUrl, {
             method: "GET",
             headers: {
               "Authorization": `Basic ${credentials}`,
               "Content-Type": "application/json",
             },
           });
-          
-          if (!searchResponse.ok) {
-            throw new Error(`Failed to search media library: ${searchResponse.status}`);
-          }
-          
-          const mediaItems = await searchResponse.json();
-          
-          if (mediaItems.length === 0) {
-            console.warn(`Image not found in media library: ${imageName}`);
-            failed++;
-            continue;
-          }
-          
-          mediaId = mediaItems[0].id;
-          console.log(`Found image: ${imageName} (ID: ${mediaId})`);
-          
-          // Update metadata for existing images
-          if (service) {
-            try {
-              const metadataUrl = `${wpSiteUrl}/wp-json/wp/v2/media/${mediaId}`;
-              const metadataPayload = {
-                title: serviceTitle,
-                alt_text: serviceTitle
-              };
-              
-              if (service.text) {
-                metadataPayload.caption = service.text.substring(0, 200);
-                metadataPayload.description = service.text;
+
+          if (checkResponse.ok) {
+            const pageData = await checkResponse.json();
+            const isElementor = pageData.meta && pageData.meta._elementor_edit_mode === 'builder';
+
+            console.log(`📋 Page Type: ${isElementor ? 'Elementor' : 'Standard ACF'}`);
+
+            if (isElementor) {
+              // Handle Elementor page
+              console.log(`🎨 Updating Elementor page...`);
+
+              // Get Elementor data
+              let elementorData = pageData.meta._elementor_data;
+              if (typeof elementorData === 'string') {
+                elementorData = JSON.parse(elementorData);
               }
-              
-              const metadataResponse = await fetch(metadataUrl, {
+
+              console.log(`📦 Original Elementor data structure:`, elementorData);
+
+              // Update Elementor data with new image IDs
+              const updatedElementorData = updateElementorImages(elementorData, acfUpdates);
+
+              // Save back to WordPress
+              const updateUrl = `${wpSiteUrl}/wp-json/wp/v2/pages/${postId}`;
+              const updatePayload = {
+                meta: {
+                  _elementor_data: JSON.stringify(updatedElementorData)
+                }
+              };
+
+              console.log(`📤 Saving updated Elementor data...`);
+
+              const updateResponse = await fetch(updateUrl, {
                 method: "POST",
                 headers: {
                   "Authorization": `Basic ${credentials}`,
                   "Content-Type": "application/json",
                 },
-                body: JSON.stringify(metadataPayload),
+                body: JSON.stringify(updatePayload),
               });
-              
-              if (metadataResponse.ok) {
-                console.log(`✓ Updated metadata for ${imageName}`);
+
+              if (updateResponse.ok) {
+                console.log(`✅ Successfully updated Elementor page with ${assigned} images!`);
+                showStatus(replaceStatus, `✅ Successfully updated ${assigned} service images on Elementor page!`, "success");
               } else {
-                console.warn(`⚠️ Failed to update metadata for ${imageName}`);
+                const errorData = await updateResponse.json();
+                console.warn(`⚠️ Failed to update Elementor page:`, errorData);
+                showStatus(replaceStatus, `⚠️ Failed to update Elementor page. Check console.`, "error");
               }
-            } catch (metaError) {
-              console.warn(`⚠️ Error updating metadata:`, metaError);
+
+            } else {
+              // Handle standard ACF page
+              const updateUrl = `${wpSiteUrl}/wp-json/wp/v2/pages/${postId}`;
+
+              // SAFETY: Create backup of current ACF values
+              console.log(`💾 Current ACF values (backup):`, JSON.stringify(pageData.acf, null, 2));
+
+              // Try multiple field naming conventions
+              const updatePayload = {
+                meta: metaUpdates
+              };
+
+              // Only include ACF if it exists
+              if (Object.keys(acfUpdates).length > 0) {
+                updatePayload.acf = acfUpdates;
+              }
+
+              console.log(`📤 Updating page ${postId} with fields:`, updatePayload);
+              console.log(`📋 ACF Updates:`, acfUpdates);
+              console.log(`📋 Meta Updates:`, metaUpdates);
+              console.log(`⚠️ SAFETY: If page breaks, restore these ACF values above ☝️`);
+
+              const updateResponse = await fetch(updateUrl, {
+                method: "POST",
+                headers: {
+                  "Authorization": `Basic ${credentials}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(updatePayload),
+              });
+
+              const responseData = await updateResponse.json();
+              console.log(`📥 Response from WordPress:`, responseData);
+
+              if (!updateResponse.ok) {
+                console.warn(`⚠️ Failed to update page: ${updateResponse.status}`, responseData);
+                showStatus(replaceStatus, `⚠️ Images found but page update failed. Check console.`, "warning");
+              } else {
+                console.log(`✅ Successfully updated all ${assigned} service images on page!`);
+                console.log(`✅ Response ACF:`, responseData.acf);
+                console.log(`✅ Response Meta:`, responseData.meta);
+              }
             }
           }
+        } catch (updateError) {
+          console.error(`❌ Error updating page:`, updateError);
         }
-        
-        // Add to ACF updates object (will update all at once)
-        acfUpdates[`service_${serviceNum}_image`] = mediaId;
-        metaUpdates[`service_${serviceNum}_image`] = mediaId;
-        metaUpdates[`_service_${serviceNum}_image`] = mediaId;
-        
-        console.log(`✓ Prepared Service ${serviceNum} image (ID: ${mediaId})`);
-        assigned++;
-        
-      } catch (error) {
-        console.error(`Error processing Service ${serviceNum}:`, error);
-        failed++;
       }
-    }
-    
-    // Now update ALL service images on the page in one API call
-    if (Object.keys(acfUpdates).length > 0) {
-      uploadBtn.textContent = `⏳ Updating page with ${assigned} images...`;
-      
-      try {
-        // First, check if this is an Elementor page
-        const checkUrl = `${wpSiteUrl}/wp-json/wp/v2/pages/${postId}`;
-        const checkResponse = await fetch(checkUrl, {
-          method: "GET",
-          headers: {
-            "Authorization": `Basic ${credentials}`,
-            "Content-Type": "application/json",
-          },
-        });
-        
-        if (checkResponse.ok) {
-          const pageData = await checkResponse.json();
-          const isElementor = pageData.meta && pageData.meta._elementor_edit_mode === 'builder';
-          
-          console.log(`📋 Page Type: ${isElementor ? 'Elementor' : 'Standard ACF'}`);
-          
-          if (isElementor) {
-            // Handle Elementor page
-            console.log(`🎨 Updating Elementor page...`);
-            
-            // Get Elementor data
-            let elementorData = pageData.meta._elementor_data;
-            if (typeof elementorData === 'string') {
-              elementorData = JSON.parse(elementorData);
-            }
-            
-            console.log(`📦 Original Elementor data structure:`, elementorData);
-            
-            // Update Elementor data with new image IDs
-            const updatedElementorData = updateElementorImages(elementorData, acfUpdates);
-            
-            // Save back to WordPress
-            const updateUrl = `${wpSiteUrl}/wp-json/wp/v2/pages/${postId}`;
-            const updatePayload = {
-              meta: {
-                _elementor_data: JSON.stringify(updatedElementorData)
-              }
-            };
-            
-            console.log(`📤 Saving updated Elementor data...`);
-            
-            const updateResponse = await fetch(updateUrl, {
-              method: "POST",
-              headers: {
-                "Authorization": `Basic ${credentials}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(updatePayload),
-            });
-            
-            if (updateResponse.ok) {
-              console.log(`✅ Successfully updated Elementor page with ${assigned} images!`);
-              showStatus(replaceStatus, `✅ Successfully updated ${assigned} service images on Elementor page!`, "success");
-            } else {
-              const errorData = await updateResponse.json();
-              console.warn(`⚠️ Failed to update Elementor page:`, errorData);
-              showStatus(replaceStatus, `⚠️ Failed to update Elementor page. Check console.`, "error");
-            }
-            
-          } else {
-            // Handle standard ACF page
-            const updateUrl = `${wpSiteUrl}/wp-json/wp/v2/pages/${postId}`;
-        
-            // SAFETY: Create backup of current ACF values
-            console.log(`💾 Current ACF values (backup):`, JSON.stringify(pageData.acf, null, 2));
-            
-            // Try multiple field naming conventions
-            const updatePayload = {
-              meta: metaUpdates
-            };
-            
-            // Only include ACF if it exists
-            if (Object.keys(acfUpdates).length > 0) {
-              updatePayload.acf = acfUpdates;
-            }
-            
-            console.log(`📤 Updating page ${postId} with fields:`, updatePayload);
-            console.log(`📋 ACF Updates:`, acfUpdates);
-            console.log(`📋 Meta Updates:`, metaUpdates);
-            console.log(`⚠️ SAFETY: If page breaks, restore these ACF values above ☝️`);
-            
-            const updateResponse = await fetch(updateUrl, {
-              method: "POST",
-              headers: {
-                "Authorization": `Basic ${credentials}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(updatePayload),
-            });
-            
-            const responseData = await updateResponse.json();
-            console.log(`📥 Response from WordPress:`, responseData);
-            
-            if (!updateResponse.ok) {
-              console.warn(`⚠️ Failed to update page: ${updateResponse.status}`, responseData);
-              showStatus(replaceStatus, `⚠️ Images found but page update failed. Check console.`, "warning");
-            } else {
-              console.log(`✅ Successfully updated all ${assigned} service images on page!`);
-              console.log(`✅ Response ACF:`, responseData.acf);
-              console.log(`✅ Response Meta:`, responseData.meta);
-            }
-          }
-        }
-      } catch (updateError) {
-        console.error(`❌ Error updating page:`, updateError);
+
+      if (assigned > 0) {
+        const summary = [];
+        if (assigned > 0) summary.push(`${assigned} assigned`);
+        if (failed > 0) summary.push(`${failed} failed`);
+
+        uploadBtn.textContent = `✅ ${summary.join(', ')}!`;
+        uploadBtn.style.background = "#4CAF50";
+        showStatus(replaceStatus, `✓ Successfully assigned images: ${summary.join(', ')}.`, "success");
+      } else {
+        uploadBtn.textContent = "❌ No images processed";
+        uploadBtn.style.background = "#f44336";
+        showStatus(replaceStatus, `Failed to process images. Check console for details.`, "error");
       }
-    }
-    
-    if (assigned > 0) {
-      const summary = [];
-      if (assigned > 0) summary.push(`${assigned} assigned`);
-      if (failed > 0) summary.push(`${failed} failed`);
-      
-      uploadBtn.textContent = `✅ ${summary.join(', ')}!`;
-      uploadBtn.style.background = "#4CAF50";
-      showStatus(replaceStatus, `✓ Successfully assigned images: ${summary.join(', ')}.`, "success");
-    } else {
-      uploadBtn.textContent = "❌ No images processed";
-      uploadBtn.style.background = "#f44336";
-      showStatus(replaceStatus, `Failed to process images. Check console for details.`, "error");
-    }
-      
+
     } catch (error) {
       console.error("Error uploading images:", error);
       uploadBtn.textContent = "❌ Error";
@@ -4091,7 +4158,7 @@ async function uploadAndAssignImagesViaAPI() {
         uploadBtn.disabled = false;
       }, 3000);
     }
-    
+
   } catch (outerError) {
     console.error("Error in main upload function:", outerError);
     uploadBtn.textContent = "❌ Error";
@@ -4104,20 +4171,20 @@ async function uploadAndAssignImagesViaAPI() {
 // Helper function to update Elementor images
 function updateElementorImages(elementorData, acfUpdates) {
   console.log(`🔍 Searching for image widgets in Elementor data...`);
-  
+
   // Recursively search for ACF field widgets in Elementor data
   function updateElement(element) {
     if (!element) return element;
-    
+
     // Check if this is an ACF image field
     if (element.widgetType === 'acf' || element.elType === 'widget') {
       const settings = element.settings || {};
-      
+
       // Check if this is an image field
       if (settings.acf_field_type === 'image' || settings.field_type === 'image') {
         // Get the field key
         const fieldKey = settings.acf_field || settings.field_key;
-        
+
         // Check if we have an update for this field
         for (const [fieldName, mediaId] of Object.entries(acfUpdates)) {
           if (fieldKey && fieldKey.includes(fieldName)) {
@@ -4128,7 +4195,7 @@ function updateElementorImages(elementorData, acfUpdates) {
           }
         }
       }
-      
+
       // Also check for direct image widgets with dynamic tags
       if (element.widgetType === 'image' && settings['__dynamic__']) {
         const dynamic = settings['__dynamic__'];
@@ -4145,20 +4212,20 @@ function updateElementorImages(elementorData, acfUpdates) {
         }
       }
     }
-    
+
     // Recursively process children
     if (element.elements && Array.isArray(element.elements)) {
       element.elements = element.elements.map(child => updateElement(child));
     }
-    
+
     return element;
   }
-  
+
   // Process all elements
   if (Array.isArray(elementorData)) {
     return elementorData.map(element => updateElement(element));
   }
-  
+
   return elementorData;
 }
 
@@ -4166,27 +4233,27 @@ function updateElementorImages(elementorData, acfUpdates) {
 async function assignImagesViaWordPressAdmin() {
   const replaceStatus = document.getElementById("replaceStatus");
   const uploadBtn = document.getElementById("uploadAndAssignImagesBtn");
-  
+
   try {
     showStatus(replaceStatus, "Looking for WordPress admin tab...", "info");
-    
+
     // Get the WordPress admin tab
     const tabs = await browserAPI.tabs.query({});
     const wpTabs = tabs.filter(t => t.url && (
       t.url.includes('/wp-admin') ||
       t.url.includes('/wp-login')
     ));
-    
+
     console.log('Found tabs:', wpTabs.length, wpTabs.map(t => t.url));
-    
+
     if (wpTabs.length === 0) {
       showStatus(replaceStatus, "⚠️ Please open WordPress admin (https://citywide.local/wp-admin) in a tab first, then try again.", "error");
       return;
     }
-    
+
     const wpTab = wpTabs[0];
     console.log('Using WordPress tab:', wpTab.url);
-    
+
     // Convert map to array
     const imageMappingArray = [];
     serviceImageMap.forEach((imageName, serviceNum) => {
@@ -4200,34 +4267,34 @@ async function assignImagesViaWordPressAdmin() {
         });
       }
     });
-    
+
     if (imageMappingArray.length === 0) {
       showStatus(replaceStatus, "No image mappings found. Please map images first.", "error");
       return;
     }
-    
+
     showStatus(replaceStatus, `✓ Found WordPress admin. Creating helper panel for ${imageMappingArray.length} services...`, "info");
-    
+
     // Switch to WordPress tab
     await browserAPI.tabs.update(wpTab.id, { active: true });
-    
+
     // Inject script to work through WordPress admin
     const results = await browserAPI.scripting.executeScript({
       target: { tabId: wpTab.id },
       func: assignImagesInWordPressAdminPanel,
       args: [imageMappingArray]
     });
-    
+
     console.log('Injection results:', results);
-    
+
     const result = results[0].result;
-    
+
     if (result.success) {
       showStatus(replaceStatus, `✓ ${result.message}`, "success");
     } else {
       showStatus(replaceStatus, `⚠️ ${result.message}`, "info");
     }
-    
+
   } catch (error) {
     console.error("Error in admin method:", error);
     showStatus(replaceStatus, `Error: ${error.message}. Make sure WordPress admin is open.`, "error");
@@ -4237,14 +4304,14 @@ async function assignImagesViaWordPressAdmin() {
 // Function injected into WordPress admin to assign images
 function assignImagesInWordPressAdminPanel(imageMappings) {
   console.log("Starting WordPress admin image assignment", imageMappings);
-  
+
   const messages = [];
   let assigned = 0;
-  
+
   // This creates a helper panel in WordPress admin
   const helperDiv = document.createElement('div');
   helperDiv.style.cssText = 'position:fixed; top:60px; right:20px; width:320px; background:white; border:2px solid #2271b1; border-radius:4px; padding:15px; z-index:999999; box-shadow:0 2px 10px rgba(0,0,0,0.2);';
-  
+
   helperDiv.innerHTML = `
     <h3 style="margin:0 0 10px 0; color:#2271b1;">Image Assignment Helper</h3>
     <div id="imageHelperStatus" style="font-size:12px; color:#666;">
@@ -4270,12 +4337,12 @@ function assignImagesInWordPressAdminPanel(imageMappings) {
       Close Helper
     </button>
   `;
-  
+
   document.body.appendChild(helperDiv);
-  
+
   assigned = imageMappings.length;
   messages.push(`Helper panel added with ${imageMappings.length} image assignments to complete manually.`);
-  
+
   return {
     success: true,
     assigned: assigned,
@@ -4287,22 +4354,22 @@ function assignImagesInWordPressAdminPanel(imageMappings) {
 // Function injected into WordPress page to assign images from media library
 function assignImagesInWordPress(imageMapping) {
   console.log("Starting WordPress image assignment", imageMapping);
-  
+
   let assigned = 0;
   let failed = 0;
   const messages = [];
-  
+
   try {
     // This function needs to work with WordPress's media library interface
     // Strategy: Find the "Set featured image" button, click it, search for image, select it
-    
+
     imageMapping.forEach(mapping => {
       console.log(`Processing: Service ${mapping.serviceNumber} - ${mapping.serviceTitle} -> ${mapping.imageName}`);
-      
+
       // Find the featured image link for this service
       // WordPress typically uses ID-based selectors like #postimagediv
       const featuredImageDiv = document.querySelector('#postimagediv');
-      
+
       if (featuredImageDiv) {
         const setImageLink = featuredImageDiv.querySelector('a');
         if (setImageLink) {
@@ -4319,14 +4386,14 @@ function assignImagesInWordPress(imageMapping) {
         failed++;
       }
     });
-    
+
     return {
       success: assigned > 0,
       assigned: assigned,
       failed: failed,
       message: `Processed ${assigned + failed} services. ${messages.join('; ')}`
     };
-    
+
   } catch (error) {
     console.error("Error in assignImagesInWordPress:", error);
     return {

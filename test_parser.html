@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Service Text Parser Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        textarea { width: 100%; height: 300px; margin: 10px 0; padding: 10px; border: 2px solid #ddd; }
+        button { padding: 10px 20px; background: #4CAF50; color: white; border: none; cursor: pointer; font-size: 16px; }
+        .result { margin-top: 20px; padding: 15px; background: #f5f5f5; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .service { padding: 10px; margin: 10px 0; border-left: 3px solid #4CAF50; background: white; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Service Text Parser Test</h1>
+    <p>Paste your service data below and click "Parse" to test:</p>
+    
+    <textarea id="serviceData" placeholder="Paste service data here...">Service 1 title
+Fridge Repairs
+Service 1 text
+Fast Melbourne fridge repairs across all suburbs, plus workshop regassing for lasting cooling.
+Service 1 url
+/services/melbourne/domestic/fridge-repair/
+
+Service 2 title
+Washing Machine Repairs
+Service 2 text
+Melbourne domestic washing machine repairs. We fix leaks, spin cycles, and drainage issues fast for homes, including Bosch and Miele.
+Service 2 url
+/services/melbourne/domestic/washing-machine-repairs/</textarea>
+
+    <button onclick="parseServices()">📋 Parse Services</button>
+    
+    <div id="result"></div>
+
+    <script>
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function parseServices() {
+            const serviceTextData = document.getElementById('serviceData').value.trim();
+            const resultDiv = document.getElementById('result');
+            
+            if (!serviceTextData) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = '❌ Please paste service data first';
+                return;
+            }
+
+            try {
+                let parsedServices = [];
+                const lines = serviceTextData.split('\n');
+                let currentService = {};
+                let serviceNumber = null;
+                let pendingField = null;
+
+                for (let i = 0; i < lines.length; i++) {
+                    const trimmedLine = lines[i].trim();
+                    if (!trimmedLine) continue;
+
+                    // FORMAT 1: Match "Service X title - Content"
+                    const titleMatchHyphen = trimmedLine.match(/Service\s+(\d+)\s+title\s*-\s*(.+)/i);
+                    if (titleMatchHyphen) {
+                        if (currentService.number) {
+                            parsedServices.push({ ...currentService });
+                        }
+                        serviceNumber = parseInt(titleMatchHyphen[1]);
+                        currentService = {
+                            number: serviceNumber,
+                            title: titleMatchHyphen[2].trim(),
+                        };
+                        pendingField = null;
+                        continue;
+                    }
+
+                    // FORMAT 1: Match "Service X text - Content"
+                    const textMatchHyphen = trimmedLine.match(/Service\s+(\d+)\s+text\s*-\s*(.+)/i);
+                    if (textMatchHyphen && parseInt(textMatchHyphen[1]) === serviceNumber) {
+                        currentService.text = textMatchHyphen[2].trim();
+                        pendingField = null;
+                        continue;
+                    }
+
+                    // FORMAT 1: Match "Service X url - /url/"
+                    const urlMatchHyphen = trimmedLine.match(/Service\s+(\d+)\s+url\s*-\s*(.+)/i);
+                    if (urlMatchHyphen && parseInt(urlMatchHyphen[1]) === serviceNumber) {
+                        currentService.url = urlMatchHyphen[2].trim();
+                        pendingField = null;
+                        continue;
+                    }
+
+                    // FORMAT 2: Match "Service X title" (without hyphen)
+                    const titleLabelMatch = trimmedLine.match(/^Service\s+(\d+)\s+title\s*$/i);
+                    if (titleLabelMatch) {
+                        if (currentService.number && currentService.number !== parseInt(titleLabelMatch[1])) {
+                            parsedServices.push({ ...currentService });
+                        }
+                        serviceNumber = parseInt(titleLabelMatch[1]);
+                        if (!currentService.number || currentService.number !== serviceNumber) {
+                            currentService = { number: serviceNumber };
+                        }
+                        pendingField = 'title';
+                        continue;
+                    }
+
+                    // FORMAT 2: Match "Service X text"
+                    const textLabelMatch = trimmedLine.match(/^Service\s+(\d+)\s+text\s*$/i);
+                    if (textLabelMatch && parseInt(textLabelMatch[1]) === serviceNumber) {
+                        pendingField = 'text';
+                        continue;
+                    }
+
+                    // FORMAT 2: Match "Service X url"
+                    const urlLabelMatch = trimmedLine.match(/^Service\s+(\d+)\s+url\s*$/i);
+                    if (urlLabelMatch && parseInt(urlLabelMatch[1]) === serviceNumber) {
+                        pendingField = 'url';
+                        continue;
+                    }
+
+                    // If we have a pending field, this line is the value
+                    if (pendingField && serviceNumber !== null) {
+                        if (pendingField === 'title') {
+                            currentService.title = trimmedLine;
+                        } else if (pendingField === 'text') {
+                            currentService.text = trimmedLine;
+                        } else if (pendingField === 'url') {
+                            currentService.url = trimmedLine;
+                        }
+                        pendingField = null;
+                        continue;
+                    }
+                }
+
+                // Add last service
+                if (currentService.number) {
+                    parsedServices.push({ ...currentService });
+                }
+
+                if (parsedServices.length === 0) {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = '❌ No services found. Check your format.';
+                    return;
+                }
+
+                // Display results
+                resultDiv.className = 'result success';
+                resultDiv.innerHTML = `
+                    <h3>✅ Parsed ${parsedServices.length} services successfully!</h3>
+                    ${parsedServices.map(service => `
+                        <div class="service">
+                            <strong>Service ${service.number}</strong><br>
+                            <small>
+                                <strong>Title:</strong> ${escapeHtml(service.title || 'N/A')}<br>
+                                <strong>Text:</strong> ${escapeHtml(service.text || 'N/A')}<br>
+                                <strong>URL:</strong> ${escapeHtml(service.url || 'N/A')}
+                            </small>
+                        </div>
+                    `).join('')}
+                `;
+
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `❌ Error parsing data: ${error.message}`;
+                console.error('Parse error:', error);
+            }
+        }
+    </script>
+</body>
+</html>
