@@ -74,3 +74,10 @@ Service 11 text
 Expert Dyson, Miele, Electrolux and many more vacuum cleaner repairs Melbourne. Reliable suction and optimal home cleaning performance.
 Service 11 url
 /services/melbourne/domestic/vaccum-cleaner-repair/
+
+Service 12 title
+Commercial Repairs
+Service 12 text
+Expert Melbourne Hobart, Eswood, Rational, Polar appliance service for businesses, with reliable warranty
+Service 12 url
+/services/melbourne/commercial/

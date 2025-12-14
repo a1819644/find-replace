@@ -1,0 +1,47 @@
+Service 1 title - Gas Coooktop Repairs 
+Service 1 description - Our expert technicians at Citywide Melbourne Appliance Repairs are ready to provide top-notch commercial appliance repair for brands like Waldorf, Blue Seal, and Goldstein, as seen with this commercial gas cooktop.
+Service 1 link - /services/melbourne/commercial/gas-cooktop-repair/
+
+Service 2 title - Conveyor Dishwasher Repairs
+Service 2 description - Commercial Conveyor dishwasher repairs Melbourne including Hobart, Winterhalter, and Meiko. Fix leaks, cycles, and performance issues for businesses.
+Service 2 link - /services/melbourne/commercial/converyor-dishwasher-repairs/
+
+Service 3 title - Gas Ovens Repairs
+Service 3 description - Professional commercial gas oven repairs Melbourne for leading brands like Waldorf, Blue Seal, and Goldstein.
+Service 3 link - /services/melbourne/commercial/gas-oven-repairs/
+
+Service 4 title - Dishwashers Repairs
+Service 4 description - Commercial dishwasher repairs Melbourne for brands like Hobart, Winterhalter, and Meiko. Resolve cleaning, draining, and error codes for optimal hygiene.
+Service 4 link - /services/melbourne/commercial/dishwasher-repairs/
+
+Service 5 title - Cool Room Repairs
+Service 5 description - Melbourne commercial cool room repairs including Bromic, Skope, and Kirby. Maintain temperature control with quality parts and service.
+Service 5 link - /services/melbourne/commercial/cool-room-repairs/
+
+Service 6 title - Convections Streamer Repairs
+Service 6 description - Commercial convection steamer repairs Melbourne for Rational, Convotherm, and Unox. Expert service for cooking, steam generation, and control issues.
+Service 6 link - /services/melbourne/commercial/convections-streamer-repairs/
+
+Service 7 title - Display Refrigerator Repairs
+Service 7 description - Commercial display refrigerator repairs Melbourne for Skope, Turbo Air, and Arneg. Fast fixes for temperature, safety, and operational issues.
+Service 7 link - /services/melbourne/commercial/gas-dryer-repairs/
+
+Service 8 title - Gas Dryer Repairs
+Service 8 description - Commercial gas dryer repairs Melbourne including Speed Queen, Maytag Commercial, and Electrolux Professional. Fast fixes for temperature, safety, and operational issues.
+Service 8 link - /services/melbourne/commercial/gas-dryer-repairs/
+
+Service 9 title - Reach-In Refrigerator Repairs
+Service 9 description - Melbourne reach-in refrigerator repairs including Skope, Bromic, and Williams. Reliable commercial service with full parts and labour warranty.
+Service 9 link - /services/melbourne/commercial/reach-in-refrigerator-repairs/
+
+Service 10 title - Pass-Through Dishwasher Repairs
+Service 10 description -Commercial pass-through dishwasher repairs Melbourne for Hobart, Winterhalter, and Meiko. Maintain high-volume cleaning efficiency for your business.
+Service 10 link - /services/melbourne/commercial/pass-through-dishwasher-repairs/
+
+Service 11 title - Freezer Repairs
+Service 11 description - Expert freezer repairs Melbourne for Skope, Bromic, and Williams. Reliable commercial service ensuring product visibility and freshness.
+Service 11 link - /services/melbourne/commercial/freezer-repairs/
+
+Service 12 title - Domestic Repairs
+Service 12 description - Expert domestic appliance service with reliable warranty support.
+Service 12 link - /services/melbourne/domestic/appliance-repair/

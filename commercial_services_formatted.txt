@@ -1,0 +1,83 @@
+Service 1 title
+Gas Coooktop Repairs 
+Service 1 text
+Expert commercial gas cooktop repairs for brands like Waldorf, Blue Seal, and Goldstein.
+Service 1 url
+/services/melbourne/commercial/gas-cooktop-repair/
+
+Service 2 title
+Conveyor Dishwasher Repairs
+Service 2 text
+Commercial conveyor dishwasher repairs including Hobart, Winterhalter, and Meiko.
+Service 2 url
+/services/melbourne/commercial/converyor-dishwasher-repairs/
+
+Service 3 title
+Gas Ovens Repairs
+Service 3 text
+Professional commercial gas oven repairs for brands like Waldorf, Blue Seal, and Goldstein.
+Service 3 url
+/services/melbourne/commercial/gas-oven-repairs/
+
+Service 4 title
+Dishwashers Repairs
+Service 4 text
+Commercial dishwasher repairs for brands like Hobart, Winterhalter, and Meiko.
+Service 4 url
+/services/melbourne/commercial/dishwasher-repairs/
+
+Service 5 title
+Cool Room Repairs
+Service 5 text
+Commercial cool room repairs including Bromic, Skope, and Kirby.
+Service 5 url
+/services/melbourne/commercial/cool-room-repairs/
+
+Service 6 title
+Convections Streamer Repairs
+Service 6 text
+Commercial convection steamer repairs for Rational, Convotherm, and Unox.
+Service 6 url
+/services/melbourne/commercial/convections-streamer-repairs/
+
+Service 7 title
+Display Refrigerator Repairs
+Service 7 text
+Commercial display refrigerator repairs for Skope, Turbo Air, and Arneg.
+Service 7 url
+/services/melbourne/commercial/gas-dryer-repairs/
+
+Service 8 title
+Gas Dryer Repairs
+Service 8 text
+Commercial gas dryer repairs including Speed Queen, Maytag Commercial, and Electrolux Professional.
+Service 8 url
+/services/melbourne/commercial/gas-dryer-repairs/
+
+Service 9 title
+Reach-In Refrigerator Repairs
+Service 9 text
+Reach-in refrigerator repairs including Skope, Bromic, and Williams.
+Service 9 url
+/services/melbourne/commercial/reach-in-refrigerator-repairs/
+
+Service 10 title
+Pass-Through Dishwasher Repairs
+Service 10 text
+Commercial pass-through dishwasher repairs for Hobart, Winterhalter, and Meiko.
+Service 10 url
+/services/melbourne/commercial/pass-through-dishwasher-repairs/
+
+Service 11 title
+Freezer Repairs
+Service 11 text
+Expert freezer repairs for Skope, Bromic, and Williams.
+Service 11 url
+/services/melbourne/commercial/freezer-repairs/
+
+Service 12 title
+Domestic Repairs
+Service 12 text
+Expert domestic appliance service with reliable warranty support.
+Service 12 url
+/services/melbourne/domestic/appliance-repair/

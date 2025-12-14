@@ -852,13 +852,49 @@ async function scanAndImprove() {
       func: extractTextFields,
     });
 
-    const fields = results[0].result;
+    let fields = results[0].result;
 
     if (fields.length === 0) {
       showStatus(improveStatus, "No text fields found on this page", "info");
       loadingContainer.style.display = "none";
       return;
     }
+
+    // Get new inputs
+    const exampleContentInput = document.getElementById("exampleContent");
+    const skipServicesInput = document.getElementById("skipServices");
+
+    const exampleContent = exampleContentInput ? exampleContentInput.value.trim() : "";
+    const skipServices = skipServicesInput ? skipServicesInput.checked : false;
+
+    // Filter out service fields if requested
+    if (skipServices) {
+      const initialCount = fields.length;
+      fields = fields.filter(field => {
+        const label = (field.label || "").toLowerCase();
+        const name = (field.name || "").toLowerCase();
+        // Check for "service" followed by a number, or just "service" in specific contexts
+        // Matches: "Service 1", "Service 10 Title", "service_1_text", etc.
+        const isServiceField = /service\s*\d+/i.test(label) ||
+          /service_\d+/i.test(name) ||
+          /service\s*\d+/i.test(name);
+        return !isServiceField;
+      });
+
+      const skippedCount = initialCount - fields.length;
+      if (skippedCount > 0) {
+        console.log(`🚫 Skipped ${skippedCount} service fields based on user preference.`);
+      }
+
+      if (fields.length === 0) {
+        showStatus(improveStatus, `Found ${initialCount} fields, but all were skipped as "Service" fields. Uncheck "Skip Service Sections" to include them.`, "info");
+        loadingContainer.style.display = "none";
+        return;
+      }
+    }
+
+    // Update settings with example content for this run
+    const runSettings = { ...settings, exampleContent };
 
     // Update loading message
     loadingContainer.innerHTML = `
@@ -870,7 +906,7 @@ async function scanAndImprove() {
     const progressSpan = document.getElementById("progress");
     suggestions = await improveFieldsInBatches(
       fields,
-      settings,
+      runSettings,
       progressSpan
     );
 
@@ -1272,6 +1308,11 @@ IMPORTANT: If text mentions "same-day" or "same day", always add "(subject to av
     ? `\nADDITIONAL INSTRUCTIONS: ${settings.additionalInstructions}`
     : '';
 
+  // Add example content for style matching
+  const exampleContent = settings.exampleContent
+    ? `\nSTYLE GUIDE / EXAMPLE CONTENT:\n"${settings.exampleContent}"\n- MIMIC the writing style, tone, and sentence structure of this example.`
+    : '';
+
   const fieldDetails = batch
     .map((field, idx) => {
       const contentToImprove = field.html || field.text || "";
@@ -1286,7 +1327,7 @@ IMPORTANT: If text mentions "same-day" or "same day", always add "(subject to av
 
   const outputInstructions = `Return JSON array: [{"index":number,"improved":"text"}]. Each improved text MUST be the same length or UP TO TWO words longer than the original (≤ original+2 words). Match formatting (no new HTML tags). Add "(subject to availability*)" after any "same-day" or "same day" mentions.`;
 
-  return `${businessContext}${permalinkContext}${customInstructions}
+  return `${businessContext}${permalinkContext}${customInstructions}${exampleContent}
 
 ${fieldDetails}
 
@@ -1371,6 +1412,9 @@ function parseGeminiBatchResponse(text) {
 function displaySuggestions() {
   suggestionsContainer.innerHTML = "";
 
+  // Initialize acceptedSuggestions with ALL indices by default
+  acceptedSuggestions = new Set(suggestions.map((_, i) => i));
+
   // Add summary header with quick apply button
   const summaryDiv = document.createElement("div");
   summaryDiv.style.cssText =
@@ -1385,19 +1429,36 @@ function displaySuggestions() {
   `;
   suggestionsContainer.appendChild(summaryDiv);
 
+  // Helper to update the main button text
+  function updateMainApplyButton() {
+    const btn = document.getElementById("applyAllNowBtn");
+    if (btn) {
+      const count = acceptedSuggestions.size;
+      btn.textContent = `⚡ Apply All ${count} Changes Now (Without Review)`;
+      if (count === 0) {
+        btn.disabled = true;
+        btn.style.background = "#ccc";
+      } else {
+        btn.disabled = false;
+        btn.style.background = "#FF6B35";
+      }
+    }
+  }
+
   // Add event listener for quick apply all button
   document
     .getElementById("applyAllNowBtn")
     .addEventListener("click", async function () {
+      const count = acceptedSuggestions.size;
       if (
         !confirm(
-          `Apply all ${suggestions.length} improvements immediately without review?`
+          `Apply all ${count} active improvements immediately?`
         )
       ) {
         return;
       }
 
-      this.textContent = "⏳ Applying all changes...";
+      this.textContent = "⏳ Applying changes...";
       this.disabled = true;
       this.style.background = "#757575";
 
@@ -1408,10 +1469,13 @@ function displaySuggestions() {
         });
         const tab = tabs[0];
 
+        // Filter suggestions based on acceptedSuggestions set
+        const activeSuggestions = suggestions.filter((_, index) => acceptedSuggestions.has(index));
+
         const results = await browserAPI.scripting.executeScript({
           target: { tabId: tab.id },
           func: applyChangesToPage,
-          args: [suggestions],
+          args: [activeSuggestions],
         });
 
         const result = results[0].result;
@@ -1426,9 +1490,11 @@ function displaySuggestions() {
           );
 
           // Highlight all fields as applied
-          document.querySelectorAll(".field-item").forEach((item) => {
-            item.style.border = "2px solid #4CAF50";
-            item.style.background = "#e8f5e9";
+          document.querySelectorAll(".field-item").forEach((item, index) => {
+            if (acceptedSuggestions.has(index)) {
+              item.style.border = "2px solid #4CAF50";
+              item.style.background = "#e8f5e9";
+            }
           });
         } else {
           this.textContent = "❌ Failed to Apply";
@@ -1486,7 +1552,7 @@ function displaySuggestions() {
   document.querySelectorAll(".accept-btn").forEach((btn) => {
     btn.addEventListener("click", function () {
       const index = parseInt(this.getAttribute("data-index"));
-      acceptedSuggestions.add(index);
+      // acceptedSuggestions.add(index); // Already in set since we init with all
       this.textContent = "✓ Accepted";
       this.style.background = "#2e7d32";
       this.disabled = true;
@@ -1499,7 +1565,7 @@ function displaySuggestions() {
       applySingleBtn.style.display = "block";
 
       // Update the apply all button count
-      updateApplyAllButton();
+      updateMainApplyButton();
     });
   });
 
@@ -1508,9 +1574,12 @@ function displaySuggestions() {
       const index = parseInt(this.getAttribute("data-index"));
       acceptedSuggestions.delete(index);
       this.parentElement.parentElement.style.opacity = "0.5";
-      this.textContent = "✗ Rejected";
+      this.textContent = "✗ Skipped";
       this.disabled = true;
       this.parentElement.querySelector(".accept-btn").style.display = "none";
+
+      // Update the apply all button count
+      updateMainApplyButton();
     });
   });
 
@@ -1967,11 +2036,31 @@ function extractTextFields() {
       shouldProcessField(input)
     ) {
       input.setAttribute("data-ai-improve-index", index);
+
+      // Try to find a better label
+      let label = input.name || input.id || input.placeholder || "Unknown field";
+
+      // Strategy 1: Check parent ACF data-name attribute (Most reliable for ACF)
+      const acfFieldParent = input.closest('.acf-field');
+      if (acfFieldParent && acfFieldParent.dataset.name) {
+        label = acfFieldParent.dataset.name;
+      } else {
+        // Strategy 2: Check associated label
+        if (input.id) {
+          const labelElement = document.querySelector(`label[for="${input.id}"]`);
+          if (labelElement) {
+            label = labelElement.textContent.trim();
+          }
+        }
+      }
+
       fields.push({
         index: index,
         type: input.tagName.toLowerCase(),
         text: text,
-        label: input.name || input.id || input.placeholder || "Unknown field",
+        label: label,
+        name: input.name, // Keep original name for debugging/filtering
+        id: input.id
       });
       index++;
     }
