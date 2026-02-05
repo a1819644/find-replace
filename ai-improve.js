@@ -935,10 +935,48 @@ function trimToMaxWordsPlain(text, maxWords) {
   return words.slice(0, maxWords).join(" ");
 }
 
-async function improveTextWithGemini(text, settings, maxWords) {
+// Utility: Fetch with retry for 503/429 errors
+async function fetchWithRetry(url, options, maxRetries = 5, initialDelay = 3000) {
+  let lastError;
+  for (let i = 0; i <= maxRetries; i++) {
+    try {
+      const response = await fetch(url, options);
+
+      // If successful or not a transient error, return response
+      if (response.ok || (response.status !== 503 && response.status !== 429)) {
+        return response;
+      }
+
+      console.warn(`API attempt ${i + 1} failed with ${response.status}. Retrying in ${initialDelay * Math.pow(1.5, i)}ms...`);
+    } catch (error) {
+      console.warn(`Network attempt ${i + 1} failed: ${error.message}. Retrying...`);
+      lastError = error;
+    }
+
+    if (i === maxRetries) break;
+
+    // Exponential backoff with jitter
+    const delay = initialDelay * Math.pow(1.5, i) * (0.8 + Math.random() * 0.4);
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+  throw lastError || new Error("Max retries reached (Service Unavailable)");
+}
+
+async function improveTextWithGemini(text, settings, maxWords, model = "gemini-2.5-flash") {
+  try {
+    return await improveTextWithGeminiCore(text, settings, maxWords, model);
+  } catch (error) {
+    if (model === "gemini-2.5-flash") {
+      console.warn("Gemini 2.5 Flash failed, falling back to Gemini 2.5 Pro...");
+      return await improveTextWithGeminiCore(text, settings, maxWords, "gemini-2.5-pro");
+    }
+    throw error;
+  }
+}
+
+async function improveTextWithGeminiCore(text, settings, maxWords, model) {
   const apiKey = settings.geminiApiKey;
-  // Use Gemini 2.5 Flash model
-  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
   // Include permalink context if available
   const intent = (pageIntent && pageIntent.intent) || "unknown";
@@ -974,7 +1012,7 @@ Please provide an improved version that is:
 Return ONLY the improved text without explanations or quotes.`;
 
   try {
-    const response = await fetch(apiUrl, {
+    const response = await fetchWithRetry(apiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -1187,12 +1225,24 @@ async function fallbackImproveField(field, settings, maxWords) {
   }
 }
 
-async function improveBatchWithGemini(batch, settings, pageCtx) {
+async function improveBatchWithGemini(batch, settings, pageCtx, model = "gemini-2.5-pro") {
+  try {
+    return await improveBatchWithGeminiCore(batch, settings, pageCtx, model);
+  } catch (error) {
+    if (model === "gemini-2.5-pro") {
+      console.warn("Batch Gemini 2.5 Pro failed, falling back to Gemini 2.5 Flash...");
+      return await improveBatchWithGeminiCore(batch, settings, pageCtx, "gemini-2.5-flash");
+    }
+    throw error;
+  }
+}
+
+async function improveBatchWithGeminiCore(batch, settings, pageCtx, model) {
   const apiKey = settings.geminiApiKey;
-  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
   const prompt = buildBatchPrompt(batch, settings, pageCtx || pageIntent);
 
-  const response = await fetch(apiUrl, {
+  const response = await fetchWithRetry(apiUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

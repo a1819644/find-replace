@@ -76,9 +76,54 @@ Expert freezer repairs for Skope, Bromic, and Williams.
 Service 11 url
 /services/melbourne/commercial/freezer-repairs/
 
+extra 
+
 Service 12 title
-Domestic Repairs
+Salamander Grill Repairs
 Service 12 text
-Expert domestic appliance service with reliable warranty support.
+Commercial Salamander Grill Repairs for Waldorf, Blue Seal, Goldstein, and many more.
 Service 12 url
-/services/melbourne/domestic/appliance-repair/
+/services/melbourne/commercial/salamander-grill/
+
+
+Service 13 title
+Hot Food Display Repairs
+Service 13 text
+Commercial Faulty hot food display brands: Birko, Roband, Anvil, Goldstein — and many more.
+Service 13 url
+/services/melbourne/commercial/hot-food-display-repairs/
+
+
+Service 14 title
+Combi Oven Repairs
+Service 14 text
+Commercial Combi Oven Repairs — Melbourne’s Expert In‑House Trained Technicians specialise in repairing Rational, Unox, Convotherm, Electrolux and many more.
+Service 14 url
+/services/melbourne/commercial/combi-oven-repairs/
+
+
+
+Service 15 title
+Combi Oven Repairs
+Service 15 text
+Commercial Combi Oven Repairs — Melbourne’s Expert In‑House Trained Technicians specialise in repairing Rational, Unox, Convotherm, Electrolux and many more.
+Service 15 url
+/services/melbourne/commercial/combi-oven-repairs/
+
+
+Service 15 title
+Mixer Repairs
+Service 15 text
+Commercial Mixer Repairs — Melbourne technicians diagnose and repair all major brands and models, including Hobart, Spiral Mixers, Globe, KitchenAid Commercial, and many more.
+Service 15 url
+/services/melbourne/commercial/mixer-repairs/
+
+
+
+Gas cooktop - wrong photo
+Convection steamer - replace this with another appliance maybe Flat BBQ
+Domestic - Wrong photo
+
+Gas Cooktop - Wrong Photo
+Freezer - wrong photo
+Domestic - wrong photo
